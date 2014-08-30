@@ -1,0 +1,25 @@
+[
+    {
+        "name": "simple single test",
+        "initialSource": "/test/SimpleTask.java",
+        "generatedSources": [
+            "/test/SpecialTaskHandlerRequest.java"
+        ]
+    },
+    {
+        "name": "task with a void return",
+        "initialSource": "/test/VoidReturnTask.java",
+        "generatedSources": [
+            "/test/VoidReturnRequest.java"
+        ]
+    },
+    {
+        "name": "multipule tasks in single class",
+        "initialSource": "/test/MultipuleTasks.java",
+        "generatedSources": [
+            "/test/TaskARequest.java",
+            "/test/TaskBRequest.java",
+            "/test/TaskCRequest.java"
+        ]
+    }
+]

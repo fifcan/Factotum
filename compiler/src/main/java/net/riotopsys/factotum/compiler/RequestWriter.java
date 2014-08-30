@@ -2,7 +2,7 @@ package net.riotopsys.factotum.compiler;
 
 import com.google.common.base.Joiner;
 import com.squareup.javawriter.JavaWriter;
-import net.riotopsys.factotum.api.abstracts.AbstractRequest;
+import net.riotopsys.factotum.api.customize.AbstractRequest;
 import net.riotopsys.factotum.api.annotation.Task;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -82,19 +82,39 @@ public class RequestWriter {
                 .emitAnnotation(Override.class)
                 .beginMethod("Class", "HandleingClass", EnumSet.of(Modifier.PUBLIC))
                 .emitStatement("return %s.class", parentClass)
-                .endMethod()
+                .endMethod();
 
                 //write execute method
-                .emitAnnotation(Override.class)
+        if ( Util.hasVoidReturn(elem ) ){
+            createVoidExecute(elem, parentClass, parameterNames, jw);
+        } else {
+            createNormalExecute(elem, parentClass, parameterNames, jw);
+        }
+
+
+        jw.endType()
+                .close();
+
+    }
+
+    private void createNormalExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
+        jw.emitAnnotation(Override.class)
                 .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), "Object", "handler")
                 .beginControlFlow("if ( isCanceled() )")
                 .emitStatement("return null")
                 .endControlFlow()
                 .emitStatement("return ((%s)handler).%s(%s)", parentClass, elem.getSimpleName().toString(), Joiner.on(", ").join(parameterNames))
-                .endMethod()
+                .endMethod();
+    }
 
-                .endType()
-                .close();
-
+    private void createVoidExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
+        jw.emitAnnotation(Override.class)
+                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), "Object", "handler")
+                .beginControlFlow("if ( isCanceled() )")
+                .emitStatement("return null")
+                .endControlFlow()
+                .emitStatement("((%s)handler).%s(%s)", parentClass, elem.getSimpleName().toString(), Joiner.on(", ").join(parameterNames))
+                .emitStatement("return null")
+                .endMethod();
     }
 }

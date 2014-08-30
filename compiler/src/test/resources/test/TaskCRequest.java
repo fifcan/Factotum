@@ -2,17 +2,17 @@ package test;
 
 import net.riotopsys.factotum.api.customize.AbstractRequest;
 
-public final class SpecialTaskHandlerRequest extends AbstractRequest {
+public final class TaskCRequest extends AbstractRequest {
 
-    private final String stuff;
+    private final Object stuff;
 
-    public SpecialTaskHandlerRequest(String stuff){
+    public TaskCRequest(Object stuff){
         this.stuff = stuff;
     }
 
     @Override
     public Class HandleingClass() {
-        return SimpleTask.class;
+        return MultipuleTasks.class;
     }
 
     @Override
@@ -20,7 +20,7 @@ public final class SpecialTaskHandlerRequest extends AbstractRequest {
         if ( isCanceled() ){
             return null;
         }
-        return ((SimpleTask)handler).specialTaskHandler(stuff);
+        return ((MultipuleTasks)handler).taskC(stuff);
     }
 
 }

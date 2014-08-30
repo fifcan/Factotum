@@ -2,6 +2,7 @@ package net.riotopsys.factotum.compiler;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -28,6 +29,10 @@ public class Util {
         TypeMirror parameterType = parameterElement.asType();
         Types typeUtils = processingEnv.getTypeUtils();
         return (TypeElement) typeUtils.asElement(parameterType);
+    }
+
+    public static boolean hasVoidReturn(ExecutableElement element) {
+        return element.getReturnType().getKind().equals(TypeKind.VOID);
     }
 
 }

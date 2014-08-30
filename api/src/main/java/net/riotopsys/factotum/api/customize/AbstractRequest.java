@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.abstracts;
+package net.riotopsys.factotum.api.customize;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractRequest {
 
     private AtomicBoolean canceled = new AtomicBoolean(false);
-    private Object taskGroup = null;
+    private Object group = null;
     private int priority = 0;
 
     public abstract Class HandleingClass();
@@ -22,8 +22,8 @@ public abstract class AbstractRequest {
         canceled.set(true);
     }
 
-    public AbstractRequest setTaskGroup(Object taskGroup){
-        this.taskGroup = taskGroup;
+    public AbstractRequest setGroup(Object group){
+        this.group = group;
         return this;
     }
 
@@ -34,5 +34,9 @@ public abstract class AbstractRequest {
 
     public int getPriority() {
         return priority;
+    }
+
+    public Object getGroup() {
+        return group;
     }
 }
