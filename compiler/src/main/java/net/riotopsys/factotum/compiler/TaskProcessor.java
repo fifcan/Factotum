@@ -1,8 +1,10 @@
 package net.riotopsys.factotum.compiler;
 
+import com.google.auto.service.AutoService;
 import net.riotopsys.factotum.api.annotation.Task;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -15,6 +17,7 @@ import java.util.Set;
 /**
  * Created by afitzgerald on 8/27/14.
  */
+@AutoService(Processor.class)
 @SupportedAnnotationTypes({
         "net.riotopsys.factotum.api.annotation.Task"
 })
