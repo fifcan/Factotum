@@ -13,14 +13,16 @@ buildscript {
 apply plugin: 'com.github.ben-manes.versions'
 
 allprojects  {
-    apply plugin: 'maven'
-
     group = 'net.riotopsys.factotum'
     version = '0.0.0-SNAPSHOT'
 
     apply plugin: 'java'
+    apply plugin: "jacoco"
+    
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
+
+    test.finalizedBy(project.tasks.jacocoTestReport)
 
 }
 
