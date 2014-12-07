@@ -1,0 +1,6 @@
+rootProject.name = 'parent'
+include ':factotum'
+include ':factotum-compiler'
+
+project(':factotum').projectDir = "$rootDir/api" as File
+project(':factotum-compiler').projectDir = "$rootDir/compiler" as File
