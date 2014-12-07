@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.customize;
+package net.riotopsys.factotum.api;
 
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;

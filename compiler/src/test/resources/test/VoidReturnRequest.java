@@ -1,6 +1,6 @@
 package test;
 
-import net.riotopsys.factotum.api.customize.AbstractRequest;
+import net.riotopsys.factotum.api.AbstractRequest;
 
 public final class VoidReturnRequest extends AbstractRequest {
 
@@ -11,8 +11,8 @@ public final class VoidReturnRequest extends AbstractRequest {
     }
 
     @Override
-    public Class HandleingClass() {
-        return VoidReturnTask.class;
+    public Object getTask() {
+        return new VoidReturnTask();
     }
 
     @Override

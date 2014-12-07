@@ -2,7 +2,7 @@ package net.riotopsys.factotum.compiler;
 
 import com.google.common.base.Joiner;
 import com.squareup.javawriter.JavaWriter;
-import net.riotopsys.factotum.api.customize.AbstractRequest;
+import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.annotation.Task;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -80,8 +80,8 @@ public class RequestWriter {
 
                 //write handleingClass method
                 .emitAnnotation(Override.class)
-                .beginMethod("Class", "HandleingClass", EnumSet.of(Modifier.PUBLIC))
-                .emitStatement("return %s.class", parentClass)
+                .beginMethod("Object", "getTask", EnumSet.of(Modifier.PUBLIC))
+                .emitStatement("return new %s()", parentClass)
                 .endMethod();
 
                 //write execute method

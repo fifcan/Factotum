@@ -1,6 +1,6 @@
 package net.riotopsys.factotum.api.concurent;
 
-import net.riotopsys.factotum.api.customize.AbstractRequest;
+import net.riotopsys.factotum.api.AbstractRequest;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,16 +10,14 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RequestCallable implements Callable<Object>, Comparable<RequestCallable> {
 
-    private static AtomicLong seq = new AtomicLong();
-
     private final AbstractRequest request;
     private final Object handler;
     private final long serial;
 
-    public RequestCallable( AbstractRequest request, Object handler ){
+    public RequestCallable( AbstractRequest request, Object handler, long serial ){
         this.request = request;
         this.handler = handler;
-        this.serial = seq.getAndIncrement();
+        this.serial = serial;
     }
 
     @Override

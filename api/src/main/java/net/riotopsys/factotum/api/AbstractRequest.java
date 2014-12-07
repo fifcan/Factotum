@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.customize;
+package net.riotopsys.factotum.api;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,7 +11,6 @@ public abstract class AbstractRequest {
     private Object group = null;
     private int priority = 0;
 
-    public abstract Class HandleingClass();
     public abstract Object execute(Object handler);
 
     public boolean isCanceled(){
@@ -39,4 +38,6 @@ public abstract class AbstractRequest {
     public Object getGroup() {
         return group;
     }
+
+    public abstract Object getTask();
 }

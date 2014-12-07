@@ -1,6 +1,6 @@
 package test;
 
-import net.riotopsys.factotum.api.customize.AbstractRequest;
+import net.riotopsys.factotum.api.AbstractRequest;
 
 public final class TaskCRequest extends AbstractRequest {
 
@@ -11,8 +11,8 @@ public final class TaskCRequest extends AbstractRequest {
     }
 
     @Override
-    public Class HandleingClass() {
-        return MultipuleTasks.class;
+    public Object getTask() {
+        return new MultipuleTasks();
     }
 
     @Override
