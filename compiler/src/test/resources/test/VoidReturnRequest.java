@@ -11,12 +11,12 @@ public final class VoidReturnRequest extends AbstractRequest {
     }
 
     @Override
-    public Object getTask() {
+    public Object getTaskHandler() {
         return new VoidReturnTask();
     }
 
     @Override
-    public Object execute(Object handler) {
+    public Object execute(Object handler) throws Exception{
         if ( isCanceled() ){
             return null;
         }

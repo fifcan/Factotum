@@ -1,5 +1,6 @@
 package net.riotopsys.factotum.api;
 
+import net.riotopsys.factotum.api.concurent.ResultWrapper;
 import net.riotopsys.factotum.api.customize.ICancelRequest;
 import net.riotopsys.factotum.api.concurent.PauseableThreadPoolExecutor;
 import net.riotopsys.factotum.api.concurent.RequestCallable;
@@ -32,7 +33,7 @@ public class Factotum {
 
     private ResultCallback resultCallback = new ResultCallback(completionService) {
         @Override
-        public void onResult(Object result) {
+        public void onResult(ResultWrapper result) {
             onTaskCompletionCallback.OnTaskCompletion(result);
         }
     };
@@ -76,7 +77,7 @@ public class Factotum {
         if ( request.isCanceled() ){
             return;
         }
-        Object handler = request.getTask();
+        Object handler = request.getTaskHandler();
         onTaskCreationCallback.onTaskCreation(handler);
         completionService.submit(new RequestCallable(request, handler, seq.getAndIncrement()));
     }
@@ -111,7 +112,7 @@ public class Factotum {
 
         private IOnTaskCompletionCallback onTaskCompletionCallback = new IOnTaskCompletionCallback() {
             @Override
-            public void OnTaskCompletion(Object object) {
+            public void OnTaskCompletion(ResultWrapper object) {
                 //noop
             }
         };

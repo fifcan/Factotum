@@ -1,5 +1,8 @@
 package net.riotopsys.factotum.api;
 
+import net.riotopsys.factotum.api.concurent.ICallback;
+
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -10,8 +13,10 @@ public abstract class AbstractRequest {
     private AtomicBoolean canceled = new AtomicBoolean(false);
     private Object group = null;
     private int priority = 0;
+    private WeakReference<ICallback> callbackRef = null;
 
-    public abstract Object execute(Object handler);
+    public abstract Object execute(Object handler) throws Exception;
+    public abstract Object getTaskHandler();
 
     public boolean isCanceled(){
         return canceled.get();
@@ -39,5 +44,10 @@ public abstract class AbstractRequest {
         return group;
     }
 
-    public abstract Object getTask();
+    public ICallback getCallback() {
+        if ( callbackRef == null ){
+            return null;
+        }
+        return callbackRef.get();
+    }
 }

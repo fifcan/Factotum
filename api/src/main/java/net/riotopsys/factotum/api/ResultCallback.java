@@ -1,7 +1,8 @@
 package net.riotopsys.factotum.api;
 
+import net.riotopsys.factotum.api.concurent.ResultWrapper;
+
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -17,13 +18,13 @@ public abstract class ResultCallback implements Runnable{
         this.completionService = completionService;
     }
 
-    public abstract void onResult( Object result );
+    public abstract void onResult( ResultWrapper result );
 
     @Override
     public void run() {
         while ( !stopped.get() ){
             try {
-                onResult(completionService.take().get());
+                onResult((ResultWrapper) completionService.take().get());
             } catch (Exception e) {
                 //TODO: think of better handling
                 //noop

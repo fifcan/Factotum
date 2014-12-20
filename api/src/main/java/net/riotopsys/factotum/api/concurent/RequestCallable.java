@@ -3,12 +3,11 @@ package net.riotopsys.factotum.api.concurent;
 import net.riotopsys.factotum.api.AbstractRequest;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by afitzgerald on 8/29/14.
  */
-public class RequestCallable implements Callable<Object>, Comparable<RequestCallable> {
+public class RequestCallable implements Callable<ResultWrapper>, Comparable<RequestCallable> {
 
     private final AbstractRequest request;
     private final Object handler;
@@ -21,11 +20,30 @@ public class RequestCallable implements Callable<Object>, Comparable<RequestCall
     }
 
     @Override
-    public Object call() throws Exception {
+    public ResultWrapper call() throws Exception {
         if ( request.isCanceled() ){
             return null;
         }
-        return request.execute(handler);
+
+        ICallback callback = request.getCallback();
+
+        Object result;
+        try {
+            result = request.execute(handler);
+
+            if ( callback != null ){
+                callback.onSuccess(request, result);
+            }
+
+        } catch ( Exception e){
+            result = e;
+
+            if ( callback != null ){
+                callback.onFailure(request, result);
+            }
+        }
+
+        return new ResultWrapper(request, result);
     }
 
     @Override

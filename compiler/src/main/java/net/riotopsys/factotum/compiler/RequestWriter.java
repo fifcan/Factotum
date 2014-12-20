@@ -1,6 +1,7 @@
 package net.riotopsys.factotum.compiler;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.squareup.javawriter.JavaWriter;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.annotation.Task;
@@ -80,7 +81,7 @@ public class RequestWriter {
 
                 //write handleingClass method
                 .emitAnnotation(Override.class)
-                .beginMethod("Object", "getTask", EnumSet.of(Modifier.PUBLIC))
+                .beginMethod("Object", "getTaskHandler", EnumSet.of(Modifier.PUBLIC))
                 .emitStatement("return new %s()", parentClass)
                 .endMethod();
 
@@ -99,7 +100,7 @@ public class RequestWriter {
 
     private void createNormalExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
         jw.emitAnnotation(Override.class)
-                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), "Object", "handler")
+                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), Lists.newArrayList("Object", "handler"), Lists.newArrayList("Exception") )
                 .beginControlFlow("if ( isCanceled() )")
                 .emitStatement("return null")
                 .endControlFlow()
@@ -109,7 +110,7 @@ public class RequestWriter {
 
     private void createVoidExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
         jw.emitAnnotation(Override.class)
-                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), "Object", "handler")
+                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), Lists.newArrayList("Object", "handler"), Lists.newArrayList("Exception"))
                 .beginControlFlow("if ( isCanceled() )")
                 .emitStatement("return null")
                 .endControlFlow()

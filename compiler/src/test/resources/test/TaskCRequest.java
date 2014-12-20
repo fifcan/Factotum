@@ -11,12 +11,12 @@ public final class TaskCRequest extends AbstractRequest {
     }
 
     @Override
-    public Object getTask() {
+    public Object getTaskHandler() {
         return new MultipuleTasks();
     }
 
     @Override
-    public Object execute(Object handler) {
+    public Object execute(Object handler) throws Exception{
         if ( isCanceled() ){
             return null;
         }

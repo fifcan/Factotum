@@ -11,12 +11,12 @@ public final class SpecialTaskHandlerRequest extends AbstractRequest {
     }
 
     @Override
-    public Object getTask() {
+    public Object getTaskHandler() {
         return new SimpleTask();
     }
 
     @Override
-    public Object execute(Object handler) {
+    public Object execute(Object handler) throws Exception{
         if ( isCanceled() ){
             return null;
         }
