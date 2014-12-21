@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.squareup.javawriter.JavaWriter;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.annotation.Task;
+import net.riotopsys.factotum.api.concurent.ICallback;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -28,6 +29,8 @@ public class RequestWriter {
         PackageElement packageElem = Util.getPackageElement(elem);
         String packageName = packageElem.getQualifiedName().toString();
         String parentClass = elem.getEnclosingElement().getSimpleName().toString();
+
+        TypeElement returnType = Util.mirrorTypeToElementType(elem.getReturnType(), processingEnv);
 
         Task taskAnnotation = elem.getAnnotation(Task.class);
 
@@ -61,6 +64,7 @@ public class RequestWriter {
 
         jw.emitPackage(packageName)
                 .emitImports(AbstractRequest.class)
+                .emitImports(ICallback.class)
                 .emitImports(imports)
                 .beginType(requestName, "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), AbstractRequest.class.getSimpleName());
 
@@ -88,10 +92,13 @@ public class RequestWriter {
                 //write execute method
         if ( Util.hasVoidReturn(elem ) ){
             createVoidExecute(elem, parentClass, parameterNames, jw);
+            //TODO: handle set callback
         } else {
             createNormalExecute(elem, parentClass, parameterNames, jw);
+            jw.beginMethod(AbstractRequest.class.getSimpleName(),"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnType.getSimpleName() ), "callback" )
+                    .emitStatement("return internalSetCallback( callback )")
+                    .endMethod();
         }
-
 
         jw.endType()
                 .close();

@@ -1,6 +1,7 @@
 package test;
 
 import net.riotopsys.factotum.api.AbstractRequest;
+import net.riotopsys.factotum.api.concurent.ICallback;
 
 public final class VoidReturnRequest extends AbstractRequest {
 

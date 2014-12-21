@@ -1,6 +1,7 @@
 package test;
 
 import net.riotopsys.factotum.api.AbstractRequest;
+import net.riotopsys.factotum.api.concurent.ICallback;
 
 public final class TaskARequest extends AbstractRequest {
 
@@ -21,6 +22,10 @@ public final class TaskARequest extends AbstractRequest {
             return null;
         }
         return ((MultipuleTasks)handler).taskA(stuff);
+    }
+
+    public AbstractRequest setCallback( ICallback<String> callback ){
+        return internalSetCallback( callback );
     }
 
 }

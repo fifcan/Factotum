@@ -28,6 +28,7 @@ public abstract class ResultCallback implements Runnable{
             } catch (Exception e) {
                 //TODO: think of better handling
                 //noop
+//                e.printStackTrace(System.err);
             }
         }
     }

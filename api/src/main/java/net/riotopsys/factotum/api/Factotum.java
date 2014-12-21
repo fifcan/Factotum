@@ -7,6 +7,7 @@ import net.riotopsys.factotum.api.concurent.RequestCallable;
 import net.riotopsys.factotum.api.customize.IOnTaskCompletionCallback;
 import net.riotopsys.factotum.api.customize.IOnTaskCreationCallback;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -31,12 +32,7 @@ public class Factotum {
 
     private static AtomicLong seq = new AtomicLong(0);
 
-    private ResultCallback resultCallback = new ResultCallback(completionService) {
-        @Override
-        public void onResult(ResultWrapper result) {
-            onTaskCompletionCallback.OnTaskCompletion(result);
-        }
-    };
+    private ResultCallback resultCallback;
 
     private Factotum( Builder builder ){
 
@@ -45,7 +41,19 @@ public class Factotum {
                 builder.maximumPoolSize,
                 builder.keepAliveTime,
                 builder.keepAliveTimeUnit,
-                new PriorityBlockingQueue<Runnable>(),
+                new PriorityBlockingQueue<Runnable>(1, new Comparator<Runnable>() {
+                    @Override
+                    public int compare(Runnable o1, Runnable o2) {
+                        RequestCallable rhs = (RequestCallable) o2;
+                        RequestCallable lhs = (RequestCallable) o1;
+
+                        int result = lhs.request.getPriority() - rhs.request.getPriority();
+                        if ( result != 0 ){
+                            return result;
+                        }
+                        return (int) (lhs.serial - rhs.serial);
+                    }
+                }),
                 new ThreadFactory() {
                     public int count = 0;
 
@@ -63,9 +71,17 @@ public class Factotum {
 
         onTaskCreationCallback = builder.onTaskCreationCallback;
 
+        resultCallback = new ResultCallback(completionService) {
+            @Override
+            public void onResult(ResultWrapper result) {
+                onTaskCompletionCallback.OnTaskCompletion(result);
+            }
+        };
+
         resultCollector = new Thread( resultCallback );
         resultCollector.setName(String.format("%s-collector",TAG));
         resultCollector.start();
+
     }
 
     public void shutdown(){

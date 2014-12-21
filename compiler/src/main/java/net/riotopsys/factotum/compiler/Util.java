@@ -35,4 +35,9 @@ public class Util {
         return element.getReturnType().getKind().equals(TypeKind.VOID);
     }
 
+    public static TypeElement mirrorTypeToElementType(TypeMirror parameterType , ProcessingEnvironment processingEnv) {
+        Types typeUtils = processingEnv.getTypeUtils();
+        return (TypeElement) typeUtils.asElement(parameterType);
+    }
+
 }

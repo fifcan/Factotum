@@ -50,4 +50,9 @@ public abstract class AbstractRequest {
         }
         return callbackRef.get();
     }
+
+    protected AbstractRequest internalSetCallback(ICallback callback){
+        callbackRef = new WeakReference<ICallback>(callback);
+        return this;
+    }
 }

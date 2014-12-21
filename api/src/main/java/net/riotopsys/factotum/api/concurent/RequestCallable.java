@@ -7,11 +7,11 @@ import java.util.concurrent.Callable;
 /**
  * Created by afitzgerald on 8/29/14.
  */
-public class RequestCallable implements Callable<ResultWrapper>, Comparable<RequestCallable> {
+public class RequestCallable implements Callable<ResultWrapper> {
 
-    private final AbstractRequest request;
+    public final AbstractRequest request;
     private final Object handler;
-    private final long serial;
+    public final long serial;
 
     public RequestCallable( AbstractRequest request, Object handler, long serial ){
         this.request = request;
@@ -44,15 +44,6 @@ public class RequestCallable implements Callable<ResultWrapper>, Comparable<Requ
         }
 
         return new ResultWrapper(request, result);
-    }
-
-    @Override
-    public int compareTo(RequestCallable other) {
-        int result = request.getPriority() - other.request.getPriority();
-        if ( result != 0 ){
-            return result;
-        }
-        return (int) (serial - other.serial);
     }
 
     public AbstractRequest getRequest() {
