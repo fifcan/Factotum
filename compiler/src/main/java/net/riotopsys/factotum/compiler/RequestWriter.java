@@ -1,6 +1,7 @@
 package net.riotopsys.factotum.compiler;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.squareup.javawriter.JavaWriter;
 import net.riotopsys.factotum.api.AbstractRequest;
@@ -9,8 +10,11 @@ import net.riotopsys.factotum.api.concurent.ICallback;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
@@ -30,7 +34,7 @@ public class RequestWriter {
         String packageName = packageElem.getQualifiedName().toString();
         String parentClass = elem.getEnclosingElement().getSimpleName().toString();
 
-        TypeElement returnType = Util.mirrorTypeToElementType(elem.getReturnType(), processingEnv);
+
 
         Task taskAnnotation = elem.getAnnotation(Task.class);
 
@@ -46,6 +50,10 @@ public class RequestWriter {
 
         Set<String> imports = new HashSet<String>();
 
+        imports.add(AbstractRequest.class.getCanonicalName());
+        imports.add(ICallback.class.getCanonicalName());
+        imports.add(WeakReference.class.getCanonicalName());
+
         for ( VariableElement parameter: elem.getParameters()){
             TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
 
@@ -60,11 +68,43 @@ public class RequestWriter {
             }
         }
 
+        String returnDef = null;
+        if ( !Util.hasVoidReturn(elem ) ) {
+
+            TypeMirror mirrorReturnType = elem.getReturnType();
+            TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
+
+            PackageElement paramaterPackage = Util.getPackageElement(returnType);
+            if (!packageElem.equals(paramaterPackage) && !paramaterPackage.getQualifiedName().toString().equals("java.lang")) {
+                imports.add(returnType.getQualifiedName().toString());
+            }
+
+            ArrayList<String> argTypes = new ArrayList<>();
+
+            for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
+                TypeElement argElem = Util.mirrorTypeToElementType(arg, processingEnv);
+
+                PackageElement argPackage = Util.getPackageElement(argElem);
+                if (!argPackage.equals(paramaterPackage) && !argPackage.getQualifiedName().toString().equals("java.lang")) {
+                    imports.add(argElem.getQualifiedName().toString());
+                }
+
+                argTypes.add( argElem.getSimpleName().toString() );
+
+            }
+
+            if ( argTypes.size() > 0 ){
+                returnDef = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
+            } else {
+                returnDef = returnType.getSimpleName().toString();
+            }
+
+        }
+
+
         JavaWriter jw = new JavaWriter(jfo.openWriter());
 
         jw.emitPackage(packageName)
-                .emitImports(AbstractRequest.class)
-                .emitImports(ICallback.class)
                 .emitImports(imports)
                 .beginType(requestName, "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), AbstractRequest.class.getSimpleName());
 
@@ -95,10 +135,21 @@ public class RequestWriter {
             //TODO: handle set callback
         } else {
             createNormalExecute(elem, parentClass, parameterNames, jw);
-            jw.beginMethod(AbstractRequest.class.getSimpleName(),"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnType.getSimpleName() ), "callback" )
-                    .emitStatement("return internalSetCallback( callback )")
+            jw.beginMethod(requestName,"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnDef ), "callback" )
+                    .emitStatement("callbackRef = new WeakReference<ICallback>(callback)")
+                    .emitStatement("return this")
                     .endMethod();
         }
+
+        jw.beginMethod(requestName, "setGroup", EnumSet.of(Modifier.PUBLIC), "Object", "group" )
+                .emitStatement("this.group = group")
+                .emitStatement("return this")
+                .endMethod();
+
+        jw.beginMethod(requestName, "setPriority", EnumSet.of(Modifier.PUBLIC), "int", "priority" )
+                .emitStatement("this.priority = priority")
+                .emitStatement("return this")
+                .endMethod();
 
         jw.endType()
                 .close();

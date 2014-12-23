@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractRequest {
 
     private AtomicBoolean canceled = new AtomicBoolean(false);
-    private Object group = null;
-    private int priority = 0;
-    private WeakReference<ICallback> callbackRef = null;
+    protected Object group = null;
+    protected int priority = 0;
+    protected WeakReference<ICallback> callbackRef = null;
 
     public abstract Object execute(Object handler) throws Exception;
     public abstract Object getTaskHandler();
@@ -26,15 +26,15 @@ public abstract class AbstractRequest {
         canceled.set(true);
     }
 
-    public AbstractRequest setGroup(Object group){
-        this.group = group;
-        return this;
-    }
-
-    public AbstractRequest setPriority(int priority) {
-        this.priority = priority;
-        return this;
-    }
+//    public AbstractRequest setGroup(Object group){
+//        this.group = group;
+//        return this;
+//    }
+//
+//    public AbstractRequest setPriority(int priority) {
+//        this.priority = priority;
+//        return this;
+//    }
 
     public int getPriority() {
         return priority;
@@ -51,8 +51,8 @@ public abstract class AbstractRequest {
         return callbackRef.get();
     }
 
-    protected AbstractRequest internalSetCallback(ICallback callback){
-        callbackRef = new WeakReference<ICallback>(callback);
-        return this;
-    }
+//    protected AbstractRequest internalSetCallback(ICallback callback){
+//        callbackRef = new WeakReference<ICallback>(callback);
+//        return this;
+//    }
 }

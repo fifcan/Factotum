@@ -1,5 +1,6 @@
 package test;
 
+import java.lang.ref.WeakReference;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.concurent.ICallback;
 
@@ -24,8 +25,19 @@ public final class TaskBRequest extends AbstractRequest {
         return ((MultipuleTasks)handler).taskB(stuff);
     }
 
-    public AbstractRequest setCallback( ICallback<Integer> callback ){
-        return internalSetCallback( callback );
+    public TaskBRequest setCallback( ICallback<Integer> callback ){
+        callbackRef = new WeakReference<ICallback>(callback);
+        return this;
+    }
+
+    public TaskBRequest setGroup(Object group){
+        this.group = group;
+        return this;
+    }
+
+    public TaskBRequest setPriority(int priority) {
+        this.priority = priority;
+        return this;
     }
 
 }

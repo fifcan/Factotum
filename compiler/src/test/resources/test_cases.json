@@ -21,5 +21,12 @@
             "/test/TaskBRequest.java",
             "/test/TaskCRequest.java"
         ]
+    },
+    {
+        "name": "templated returns",
+        "initialSource": "/test/Templated.java",
+        "generatedSources": [
+            "/test/TemplatedRequest.java"
+        ]
     }
 ]

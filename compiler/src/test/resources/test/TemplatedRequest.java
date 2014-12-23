@@ -1,20 +1,21 @@
 package test;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.concurent.ICallback;
 
-public final class VoidReturnRequest extends AbstractRequest {
+public final class TemplatedRequest extends AbstractRequest {
 
     private final String stuff;
 
-    public VoidReturnRequest(String stuff){
+    public TemplatedRequest(String stuff){
         this.stuff = stuff;
     }
 
     @Override
     public Object getTaskHandler() {
-        return new VoidReturnTask();
+        return new Templated();
     }
 
     @Override
@@ -22,16 +23,20 @@ public final class VoidReturnRequest extends AbstractRequest {
         if ( isCanceled() ){
             return null;
         }
-        ((VoidReturnTask)handler).voidReturn(stuff);
-        return null;
+        return ((Templated)handler).templated(stuff);
     }
 
-    public VoidReturnRequest setGroup(Object group){
+    public TemplatedRequest setCallback( ICallback<List<String>> callback ){
+        callbackRef = new WeakReference<ICallback>(callback);
+        return this;
+    }
+
+    public TemplatedRequest setGroup(Object group){
         this.group = group;
         return this;
     }
 
-    public VoidReturnRequest setPriority(int priority) {
+    public TemplatedRequest setPriority(int priority) {
         this.priority = priority;
         return this;
     }
