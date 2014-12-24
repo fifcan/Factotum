@@ -1,7 +1,6 @@
 package net.riotopsys.factotum.compiler;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.squareup.javawriter.JavaWriter;
 import net.riotopsys.factotum.api.AbstractRequest;
@@ -23,84 +22,47 @@ import java.util.*;
 public class RequestWriter {
 
     private final ProcessingEnvironment processingEnv;
+    private final ExecutableElement elem;
 
-    public RequestWriter(ProcessingEnvironment processingEnv) {
+    private String packageName;
+    private String handlerClass;
+    private String requestName;
+    private ArrayList<String> constructorParameters = new ArrayList<>();
+    private ArrayList<String> parameterNames = new ArrayList<>();
+    private String returnDef;
+
+    private HashSet<String> imports = new HashSet<>();
+
+    private boolean isVoidReturn;
+
+
+    public RequestWriter(ProcessingEnvironment processingEnv, ExecutableElement elem) {
         this.processingEnv = processingEnv;
-    }
-
-    public void write(ExecutableElement elem) throws IOException {
-
-        PackageElement packageElem = Util.getPackageElement(elem);
-        String packageName = packageElem.getQualifiedName().toString();
-        String parentClass = elem.getEnclosingElement().getSimpleName().toString();
-
-
-
-        Task taskAnnotation = elem.getAnnotation(Task.class);
-
-        String requestName = taskAnnotation.requestName();
-        if ( requestName.equals(Task.DEFAULT) ){
-            requestName = Util.ucaseFirstCharacter( elem.getSimpleName().toString() ) + "Request";
-        }
-
-        JavaFileObject jfo = processingEnv.getFiler().createSourceFile(packageName +'.'+ requestName);
-
-        List<String> constructorParameters = new ArrayList<String>();
-        List<String> parameterNames = new ArrayList<String>();
-
-        Set<String> imports = new HashSet<String>();
+        this.elem = elem;
 
         imports.add(AbstractRequest.class.getCanonicalName());
         imports.add(ICallback.class.getCanonicalName());
         imports.add(WeakReference.class.getCanonicalName());
 
-        for ( VariableElement parameter: elem.getParameters()){
-            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
+        isVoidReturn = Util.hasVoidReturn(elem );
 
-            constructorParameters.add(paramType.getSimpleName().toString());
-            constructorParameters.add(parameter.getSimpleName().toString());
+        buildPackage(elem);
 
-            parameterNames.add(parameter.getSimpleName().toString());
+        buildHandlerClass();
 
-            PackageElement paramaterPackage = Util.getPackageElement(paramType);
-            if ( !packageElem.equals(paramaterPackage) && !paramaterPackage.getQualifiedName().toString().equals("java.lang")){
-                imports.add(paramType.getQualifiedName().toString());
-            }
-        }
+        buildRequestName();
 
-        String returnDef = null;
-        if ( !Util.hasVoidReturn(elem ) ) {
+        buildConstructorParams();
 
-            TypeMirror mirrorReturnType = elem.getReturnType();
-            TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
+        buildParamNames();
 
-            PackageElement paramaterPackage = Util.getPackageElement(returnType);
-            if (!packageElem.equals(paramaterPackage) && !paramaterPackage.getQualifiedName().toString().equals("java.lang")) {
-                imports.add(returnType.getQualifiedName().toString());
-            }
+        buildRetrunDef();
 
-            ArrayList<String> argTypes = new ArrayList<>();
+    }
 
-            for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
-                TypeElement argElem = Util.mirrorTypeToElementType(arg, processingEnv);
+    public void write() throws IOException {
 
-                PackageElement argPackage = Util.getPackageElement(argElem);
-                if (!argPackage.equals(paramaterPackage) && !argPackage.getQualifiedName().toString().equals("java.lang")) {
-                    imports.add(argElem.getQualifiedName().toString());
-                }
-
-                argTypes.add( argElem.getSimpleName().toString() );
-
-            }
-
-            if ( argTypes.size() > 0 ){
-                returnDef = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
-            } else {
-                returnDef = returnType.getSimpleName().toString();
-            }
-
-        }
-
+        JavaFileObject jfo = processingEnv.getFiler().createSourceFile(packageName +'.'+ requestName);
 
         JavaWriter jw = new JavaWriter(jfo.openWriter());
 
@@ -126,15 +88,15 @@ public class RequestWriter {
                 //write handleingClass method
                 .emitAnnotation(Override.class)
                 .beginMethod("Object", "getTaskHandler", EnumSet.of(Modifier.PUBLIC))
-                .emitStatement("return new %s()", parentClass)
+                .emitStatement("return new %s()", handlerClass)
                 .endMethod();
 
                 //write execute method
         if ( Util.hasVoidReturn(elem ) ){
-            createVoidExecute(elem, parentClass, parameterNames, jw);
+            createVoidExecute(elem, handlerClass, parameterNames, jw);
             //TODO: handle set callback
         } else {
-            createNormalExecute(elem, parentClass, parameterNames, jw);
+            createNormalExecute(elem, handlerClass, parameterNames, jw);
             jw.beginMethod(requestName,"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnDef ), "callback" )
                     .emitStatement("callbackRef = new WeakReference<ICallback>(callback)")
                     .emitStatement("return this")
@@ -154,6 +116,79 @@ public class RequestWriter {
         jw.endType()
                 .close();
 
+    }
+
+    private void buildRetrunDef() {
+        returnDef = null;
+        if ( !isVoidReturn ) {
+
+            TypeMirror mirrorReturnType = elem.getReturnType();
+            TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
+
+            addImport(returnType);
+
+            ArrayList<String> argTypes = new ArrayList<>();
+
+            for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
+                TypeElement argElem = Util.mirrorTypeToElementType(arg, processingEnv);
+
+                addImport(argElem);
+
+                argTypes.add( argElem.getSimpleName().toString() );
+
+            }
+
+            if ( argTypes.size() > 0 ){
+                returnDef = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
+            } else {
+                returnDef = returnType.getSimpleName().toString();
+            }
+
+        }
+    }
+
+    private void buildHandlerClass() {
+        handlerClass = elem.getEnclosingElement().getSimpleName().toString();
+    }
+
+    private void buildConstructorParams() {
+        for ( VariableElement parameter: elem.getParameters()){
+            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
+
+            constructorParameters.add(paramType.getSimpleName().toString());
+            constructorParameters.add(parameter.getSimpleName().toString());
+
+            addImport(paramType);
+        }
+    }
+
+    private void buildParamNames() {
+        for ( VariableElement parameter: elem.getParameters()){
+            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
+
+            parameterNames.add(parameter.getSimpleName().toString());
+        }
+    }
+
+    private void addImport(TypeElement paramType) {
+        PackageElement paramaterPackage = Util.getPackageElement(paramType);
+        if ( !packageName.equals(paramaterPackage.getQualifiedName().toString()) && !paramaterPackage.getQualifiedName().toString().equals("java.lang")){
+            imports.add(paramType.getQualifiedName().toString());
+        }
+    }
+
+    private void buildRequestName() {
+        Task taskAnnotation = elem.getAnnotation(Task.class);
+
+        requestName = taskAnnotation.requestName();
+        if ( requestName.equals(Task.DEFAULT) ){
+            requestName = Util.ucaseFirstCharacter(elem.getSimpleName().toString()) + "Request";
+        }
+    }
+
+    private void buildPackage(ExecutableElement elem) {
+        PackageElement packageElem = Util.getPackageElement(elem);
+        packageName = packageElem.getQualifiedName().toString();
     }
 
     private void createNormalExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {

@@ -30,11 +30,10 @@ public class TaskProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        RequestWriter requestWriter = new RequestWriter( processingEnv );
 
         try {
             for (Element elem : roundEnv.getElementsAnnotatedWith(Task.class)) {
-                requestWriter.write((ExecutableElement) elem);
+                new RequestWriter( processingEnv, (ExecutableElement) elem ).write();
             }
         } catch ( IOException e ){
             throw new RuntimeException(e);
