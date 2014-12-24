@@ -44,7 +44,7 @@ public class RequestWriter {
         imports.add(ICallback.class.getCanonicalName());
         imports.add(WeakReference.class.getCanonicalName());
 
-        isVoidReturn = Util.hasVoidReturn(elem );
+        isVoidReturn = Util.hasVoidReturn(elem);
 
         buildPackage(elem);
 
@@ -56,7 +56,9 @@ public class RequestWriter {
 
         buildParamNames();
 
-        buildRetrunDef();
+        if (!isVoidReturn) {
+            returnDef = buildRetrunDef(elem.getReturnType());
+        }
 
     }
 
@@ -118,33 +120,28 @@ public class RequestWriter {
 
     }
 
-    private void buildRetrunDef() {
-        returnDef = null;
-        if ( !isVoidReturn ) {
+    private String buildRetrunDef(TypeMirror mirrorReturnType) {
+        String result;
 
-            TypeMirror mirrorReturnType = elem.getReturnType();
-            TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
+        TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
 
-            addImport(returnType);
+        addImport(returnType);
 
-            ArrayList<String> argTypes = new ArrayList<>();
+        ArrayList<String> argTypes = new ArrayList<>();
 
-            for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
-                TypeElement argElem = Util.mirrorTypeToElementType(arg, processingEnv);
+        for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
 
-                addImport(argElem);
-
-                argTypes.add( argElem.getSimpleName().toString() );
-
-            }
-
-            if ( argTypes.size() > 0 ){
-                returnDef = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
-            } else {
-                returnDef = returnType.getSimpleName().toString();
-            }
+            argTypes.add( buildRetrunDef(arg) );
 
         }
+
+        if ( argTypes.size() > 0 ){
+            result = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
+        } else {
+            result = returnType.getSimpleName().toString();
+        }
+
+        return result;
     }
 
     private void buildHandlerClass() {

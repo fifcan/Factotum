@@ -28,5 +28,12 @@
         "generatedSources": [
             "/test/TemplatedRequest.java"
         ]
+    },
+    {
+        "name": "nested templated returns",
+        "initialSource": "/test/Nested.java",
+        "generatedSources": [
+            "/test/NestedRequest.java"
+        ]
     }
 ]
