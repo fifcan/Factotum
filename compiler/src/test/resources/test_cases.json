@@ -35,5 +35,12 @@
         "generatedSources": [
             "/test/NestedRequest.java"
         ]
+    },
+    {
+        "name": "wildcard returns",
+        "initialSource": "/test/WildCardReturn.java",
+        "generatedSources": [
+            "/test/WildcardRequest.java"
+        ]
     }
 ]

@@ -10,7 +10,9 @@ import net.riotopsys.factotum.api.concurent.ICallback;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -122,6 +124,24 @@ public class RequestWriter {
 
     private String buildRetrunDef(TypeMirror mirrorReturnType) {
         String result;
+
+        if ( mirrorReturnType.getKind() == TypeKind.WILDCARD){
+
+            TypeMirror wildType = ((WildcardType) mirrorReturnType).getSuperBound();
+
+            if ( wildType != null ){
+                return String.format("? super %s", buildRetrunDef(wildType));
+            } else {
+
+                wildType = ((WildcardType) mirrorReturnType).getExtendsBound();
+
+                if (wildType != null) {
+                    return String.format("? extends %s", buildRetrunDef(wildType));
+                } else {
+                    throw new RuntimeException("unsupported wildcard?");
+                }
+            }
+        }
 
         TypeElement returnType = Util.mirrorTypeToElementType(mirrorReturnType, processingEnv);
 
