@@ -18,7 +18,6 @@ public class Util {
         }
 
         return (PackageElement) element;
-
     }
 
     public static String ucaseFirstCharacter(String name) {

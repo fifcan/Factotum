@@ -42,5 +42,13 @@
         "generatedSources": [
             "/test/WildcardRequest.java"
         ]
+    },
+    {
+        "name": "templated arguments",
+        "initialSource": "/test/TemplatedArgument.java",
+        "generatedSources": [
+            "/test/TemplatedArgRequest.java",
+            "/test/TemplatedArgMark2Request.java"
+        ]
     }
 ]

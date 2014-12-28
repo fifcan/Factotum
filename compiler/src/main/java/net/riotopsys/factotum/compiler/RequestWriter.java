@@ -23,14 +23,26 @@ import java.util.*;
  */
 public class RequestWriter {
 
+    private static class ParameterPair{
+        public String type;
+        public String name;
+
+        public ParameterPair(String type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+    }
+
     private final ProcessingEnvironment processingEnv;
     private final ExecutableElement elem;
 
     private String packageName;
     private String handlerClass;
     private String requestName;
-    private ArrayList<String> constructorParameters = new ArrayList<>();
-    private ArrayList<String> parameterNames = new ArrayList<>();
+
+
+    private List<ParameterPair> parameters = new ArrayList<>();
+
     private String returnDef;
 
     private HashSet<String> imports = new HashSet<>();
@@ -53,15 +65,23 @@ public class RequestWriter {
         buildHandlerClass();
 
         buildRequestName();
-
-        buildConstructorParams();
-
-        buildParamNames();
+        
+        buildParameters();
 
         if (!isVoidReturn) {
-            returnDef = buildRetrunDef(elem.getReturnType());
+            returnDef = buildTypeDef(elem.getReturnType());
         }
 
+    }
+
+    private void buildParameters() {
+        for ( VariableElement parameter: elem.getParameters()){
+
+            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
+            TypeMirror parameterType = parameter.asType();
+
+            parameters.add(new ParameterPair(buildTypeDef(parameterType), parameter.getSimpleName().toString()));
+        }
     }
 
     public void write() throws IOException {
@@ -74,13 +94,11 @@ public class RequestWriter {
                 .emitImports(imports)
                 .beginType(requestName, "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), AbstractRequest.class.getSimpleName());
 
-        for ( VariableElement parameter: elem.getParameters() ){
-            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
-
-            jw.emitField(paramType.getSimpleName().toString(),parameter.getSimpleName().toString(),EnumSet.of(Modifier.PRIVATE,Modifier.FINAL));
+        for ( ParameterPair pair: parameters ){
+            jw.emitField(pair.type,pair.name,EnumSet.of(Modifier.PRIVATE,Modifier.FINAL));
         }
 
-        jw.beginConstructor(EnumSet.of(Modifier.PUBLIC), constructorParameters.toArray(new String[constructorParameters.size()]));
+        jw.beginConstructor(EnumSet.of(Modifier.PUBLIC), constructorParameters().toArray(new String[parameters.size()*2]));
 
 
         for ( VariableElement parameter: elem.getParameters()){
@@ -97,10 +115,10 @@ public class RequestWriter {
 
                 //write execute method
         if ( Util.hasVoidReturn(elem ) ){
-            createVoidExecute(elem, handlerClass, parameterNames, jw);
+            createVoidExecute(elem, handlerClass, parameterNames(), jw);
             //TODO: handle set callback
         } else {
-            createNormalExecute(elem, handlerClass, parameterNames, jw);
+            createNormalExecute(elem, handlerClass, parameterNames(), jw);
             jw.beginMethod(requestName,"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnDef ), "callback" )
                     .emitStatement("callbackRef = new WeakReference<ICallback>(callback)")
                     .emitStatement("return this")
@@ -122,7 +140,7 @@ public class RequestWriter {
 
     }
 
-    private String buildRetrunDef(TypeMirror mirrorReturnType) {
+    private String buildTypeDef(TypeMirror mirrorReturnType) {
         String result;
 
         if ( mirrorReturnType.getKind() == TypeKind.WILDCARD){
@@ -130,13 +148,13 @@ public class RequestWriter {
             TypeMirror wildType = ((WildcardType) mirrorReturnType).getSuperBound();
 
             if ( wildType != null ){
-                return String.format("? super %s", buildRetrunDef(wildType));
+                return String.format("? super %s", buildTypeDef(wildType));
             } else {
 
                 wildType = ((WildcardType) mirrorReturnType).getExtendsBound();
 
                 if (wildType != null) {
-                    return String.format("? extends %s", buildRetrunDef(wildType));
+                    return String.format("? extends %s", buildTypeDef(wildType));
                 } else {
                     throw new RuntimeException("unsupported wildcard?");
                 }
@@ -151,7 +169,7 @@ public class RequestWriter {
 
         for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
 
-            argTypes.add( buildRetrunDef(arg) );
+            argTypes.add( buildTypeDef(arg) );
 
         }
 
@@ -168,23 +186,21 @@ public class RequestWriter {
         handlerClass = elem.getEnclosingElement().getSimpleName().toString();
     }
 
-    private void buildConstructorParams() {
-        for ( VariableElement parameter: elem.getParameters()){
-            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
-
-            constructorParameters.add(paramType.getSimpleName().toString());
-            constructorParameters.add(parameter.getSimpleName().toString());
-
-            addImport(paramType);
+    public List<String> constructorParameters(){
+        List<String> result = new ArrayList<>();
+        for ( ParameterPair pair: parameters ){
+            result.add(pair.type);
+            result.add(pair.name);
         }
+        return result;
     }
 
-    private void buildParamNames() {
-        for ( VariableElement parameter: elem.getParameters()){
-            TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
-
-            parameterNames.add(parameter.getSimpleName().toString());
+    public List<String> parameterNames(){
+        List<String> result = new ArrayList<>();
+        for ( ParameterPair pair: parameters ){
+            result.add(pair.name);
         }
+        return result;
     }
 
     private void addImport(TypeElement paramType) {
