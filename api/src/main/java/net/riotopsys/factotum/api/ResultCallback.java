@@ -1,6 +1,6 @@
 package net.riotopsys.factotum.api;
 
-import net.riotopsys.factotum.api.concurent.ResultWrapper;
+import net.riotopsys.factotum.api.internal.ResultWrapper;
 
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.atomic.AtomicBoolean;

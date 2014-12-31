@@ -1,6 +1,7 @@
 package net.riotopsys.factotum.api;
 
-import net.riotopsys.factotum.api.concurent.ICallback;
+
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,16 +27,6 @@ public abstract class AbstractRequest {
         canceled.set(true);
     }
 
-//    public AbstractRequest setGroup(Object group){
-//        this.group = group;
-//        return this;
-//    }
-//
-//    public AbstractRequest setPriority(int priority) {
-//        this.priority = priority;
-//        return this;
-//    }
-
     public int getPriority() {
         return priority;
     }
@@ -51,8 +42,4 @@ public abstract class AbstractRequest {
         return callbackRef.get();
     }
 
-//    protected AbstractRequest internalSetCallback(ICallback callback){
-//        callbackRef = new WeakReference<ICallback>(callback);
-//        return this;
-//    }
 }

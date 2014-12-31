@@ -1,6 +1,7 @@
-package net.riotopsys.factotum.api.concurent;
+package net.riotopsys.factotum.api.internal;
 
 import net.riotopsys.factotum.api.AbstractRequest;
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 import java.util.concurrent.Callable;
 

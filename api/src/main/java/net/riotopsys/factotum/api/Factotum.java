@@ -1,18 +1,13 @@
 package net.riotopsys.factotum.api;
 
-import net.riotopsys.factotum.api.concurent.ResultWrapper;
-import net.riotopsys.factotum.api.customize.ICancelRequest;
-import net.riotopsys.factotum.api.concurent.PauseableThreadPoolExecutor;
-import net.riotopsys.factotum.api.concurent.RequestCallable;
-import net.riotopsys.factotum.api.customize.IOnTaskCompletionCallback;
-import net.riotopsys.factotum.api.customize.IOnTaskCreationCallback;
+import net.riotopsys.factotum.api.internal.*;
+import net.riotopsys.factotum.api.internal.FriendlyCompletionService.QueueingFuture;
+import net.riotopsys.factotum.api.interfaces.ICancelRequest;
+import net.riotopsys.factotum.api.interfaces.IOnTaskCompletionCallback;
+import net.riotopsys.factotum.api.interfaces.IOnTaskCreationCallback;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -23,7 +18,7 @@ public class Factotum {
     private static final String TAG = Factotum.class.getSimpleName();
 
     private PauseableThreadPoolExecutor executor;
-    private ExecutorCompletionService completionService;
+    private CompletionService completionService;
     private Thread resultCollector;
 
     private IOnTaskCompletionCallback onTaskCompletionCallback;
@@ -41,19 +36,7 @@ public class Factotum {
                 builder.maximumPoolSize,
                 builder.keepAliveTime,
                 builder.keepAliveTimeUnit,
-                new PriorityBlockingQueue<Runnable>(1, new Comparator<Runnable>() {
-                    @Override
-                    public int compare(Runnable o1, Runnable o2) {
-                        RequestCallable rhs = (RequestCallable) o2;
-                        RequestCallable lhs = (RequestCallable) o1;
-
-                        int result = lhs.request.getPriority() - rhs.request.getPriority();
-                        if ( result != 0 ){
-                            return result;
-                        }
-                        return (int) (lhs.serial - rhs.serial);
-                    }
-                }),
+                new PriorityBlockingQueue<>(1, new RunnableComparator()),
                 new ThreadFactory() {
                     public int count = 0;
 
@@ -65,7 +48,7 @@ public class Factotum {
                     }
                 });
 
-        completionService = new ExecutorCompletionService( executor );
+        completionService = new FriendlyCompletionService( executor );
 
         onTaskCompletionCallback = builder.onTaskCompletionCallback;
 
@@ -103,7 +86,7 @@ public class Factotum {
 
         Iterator<Runnable> iter = executor.getQueue().iterator();
         while ( iter.hasNext() ){
-            RequestCallable callable = (RequestCallable) iter.next();
+            RequestCallable callable = (RequestCallable) ((QueueingFuture)iter.next()).getOriginalCallable();
             AbstractRequest request = callable.getRequest();
 
             if ( cancelRequest.match(request.getGroup()) ){

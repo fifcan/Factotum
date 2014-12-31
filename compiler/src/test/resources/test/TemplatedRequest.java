@@ -3,7 +3,7 @@ package test;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import net.riotopsys.factotum.api.AbstractRequest;
-import net.riotopsys.factotum.api.concurent.ICallback;
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 public final class TemplatedRequest extends AbstractRequest {
 

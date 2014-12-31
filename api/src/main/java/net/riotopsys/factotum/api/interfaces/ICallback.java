@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.concurent;
+package net.riotopsys.factotum.api.interfaces;
 
 import net.riotopsys.factotum.api.AbstractRequest;
 

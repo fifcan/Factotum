@@ -1,6 +1,6 @@
-package net.riotopsys.factotum.api.customize;
+package net.riotopsys.factotum.api.interfaces;
 
-import net.riotopsys.factotum.api.concurent.ResultWrapper;
+import net.riotopsys.factotum.api.internal.ResultWrapper;
 
 /**
  * Created by afitzgerald on 12/7/14.

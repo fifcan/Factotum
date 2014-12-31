@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.concurent;
+package net.riotopsys.factotum.api.internal;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;

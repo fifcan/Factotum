@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.riotopsys.factotum.api.AbstractRequest;
-import net.riotopsys.factotum.api.concurent.ICallback;
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 public final class NestedRequest extends AbstractRequest {
 

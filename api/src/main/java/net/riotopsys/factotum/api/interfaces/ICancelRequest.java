@@ -1,4 +1,4 @@
-package net.riotopsys.factotum.api.customize;
+package net.riotopsys.factotum.api.interfaces;
 
 /**
  * Created by afitzgerald on 8/29/14.

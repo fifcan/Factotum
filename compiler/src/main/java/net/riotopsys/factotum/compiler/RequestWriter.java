@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.squareup.javawriter.JavaWriter;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.annotation.Task;
-import net.riotopsys.factotum.api.concurent.ICallback;
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;

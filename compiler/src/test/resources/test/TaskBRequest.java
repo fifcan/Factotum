@@ -2,7 +2,7 @@ package test;
 
 import java.lang.ref.WeakReference;
 import net.riotopsys.factotum.api.AbstractRequest;
-import net.riotopsys.factotum.api.concurent.ICallback;
+import net.riotopsys.factotum.api.interfaces.ICallback;
 
 public final class TaskBRequest extends AbstractRequest {
 

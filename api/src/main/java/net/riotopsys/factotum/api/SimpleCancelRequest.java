@@ -1,6 +1,6 @@
 package net.riotopsys.factotum.api;
 
-import net.riotopsys.factotum.api.customize.ICancelRequest;
+import net.riotopsys.factotum.api.interfaces.ICancelRequest;
 
 /**
  * Created by afitzgerald on 8/29/14.
