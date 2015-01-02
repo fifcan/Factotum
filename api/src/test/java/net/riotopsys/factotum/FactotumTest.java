@@ -25,6 +25,8 @@ import static org.mockito.Mockito.*;
  */
 public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreationCallback, IOnTaskCompletionCallback {
 
+    Object mon;
+
     private AtomicBoolean created = new AtomicBoolean();
     private AtomicBoolean completed = new AtomicBoolean();
 
@@ -47,6 +49,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
         obj = new Object();
         wrapper = null;
         isCanceled = false;
+        mon = new Object();
     }
 
     @Test
@@ -62,7 +65,11 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
 
         factotum.addRequest(request);
 
-        while ( !completed.get() );
+        synchronized (mon) {
+            while (!completed.get()){
+                mon.wait();
+            }
+        }
 
         Assert.assertTrue(created.get());
         Assert.assertTrue(completed.get());
@@ -126,7 +133,15 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
         factotum.addRequest(request2);
         factotum.issueCancelation(new SimpleCancelRequest("eggs"));
 
-        while ( !completed.get() );
+        synchronized (mon) {
+            while (!completed.get()){
+                try{
+                    mon.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
 
         verify(request, times(0)).cancel();
         verify(request2, times(1)).cancel();
@@ -140,13 +155,16 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
                 .setOnTaskCompletionCallback(this)
                 .setOnTaskCreationCallback(this)
                 .setMaximumPoolSize(1)
-                .Build();
+                .build();
     }
 
     @Override
-    public void OnTaskCompletion(ResultWrapper wrapper) {
+    public void onTaskCompletion(ResultWrapper wrapper) {
         this.wrapper = wrapper;
         completed.set(true);
+        synchronized (mon) {
+            mon.notify();
+        }
     }
 
     @Override

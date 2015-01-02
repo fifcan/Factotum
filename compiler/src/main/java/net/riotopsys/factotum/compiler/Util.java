@@ -41,7 +41,7 @@ public class Util {
     }
 
     public static TypeElement getTypeElement(Element element) {
-        while (element.getKind() != ElementKind.CLASS && element.getKind() != ElementKind.INTERFACE && element != null){
+        while ( element != null && element.getKind() != ElementKind.CLASS && element.getKind() != ElementKind.INTERFACE){
             element = element.getEnclosingElement();
         }
         return (TypeElement) element;

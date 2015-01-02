@@ -57,7 +57,7 @@ public class Factotum {
         resultCallback = new ResultCallback(completionService) {
             @Override
             public void onResult(ResultWrapper result) {
-                onTaskCompletionCallback.OnTaskCompletion(result);
+                onTaskCompletionCallback.onTaskCompletion(result);
             }
         };
 
@@ -111,7 +111,7 @@ public class Factotum {
 
         private IOnTaskCompletionCallback onTaskCompletionCallback = new IOnTaskCompletionCallback() {
             @Override
-            public void OnTaskCompletion(ResultWrapper object) {
+            public void onTaskCompletion(ResultWrapper object) {
                 //noop
             }
         };
@@ -157,7 +157,7 @@ public class Factotum {
             return this;
         }
 
-        public Factotum Build(){
+        public Factotum build(){
             return new Factotum(this);
         }
     }

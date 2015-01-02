@@ -7,5 +7,5 @@ import net.riotopsys.factotum.api.internal.ResultWrapper;
  */
 public interface IOnTaskCompletionCallback {
 
-    public void OnTaskCompletion(ResultWrapper object);
+    public void onTaskCompletion(ResultWrapper object);
 }

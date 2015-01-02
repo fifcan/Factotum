@@ -1,11 +1,12 @@
 package net.riotopsys.factotum.api.internal;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
 * Created by afitzgerald on 12/30/14.
 */
-public class PriorityComparator implements Comparator<Runnable> {
+public class PriorityComparator implements Comparator<Runnable>, Serializable {
     @Override
     public int compare(Runnable o1, Runnable o2) {
         RequestCallable rhs = (RequestCallable) ((FriendlyCompletionService.QueueingFuture) o2).getOriginalCallable();

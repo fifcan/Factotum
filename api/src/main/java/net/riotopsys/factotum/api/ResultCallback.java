@@ -27,8 +27,7 @@ public abstract class ResultCallback implements Runnable{
                 onResult((ResultWrapper) completionService.take().get());
             } catch (Exception e) {
                 //TODO: think of better handling
-                //noop
-//                e.printStackTrace(System.err);
+                e.printStackTrace(System.err);
             }
         }
     }

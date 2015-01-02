@@ -27,15 +27,11 @@ public class FriendlyCompletionService<V> implements CompletionService<V> {
         return new FutureTask<V>(task);
     }
 
-    private RunnableFuture<V> newTaskFor(Runnable task, V result) {
-        return new FutureTask<V>(task, result);
-    }
-
     public FriendlyCompletionService(Executor executor) {
         if (executor == null)
             throw new NullPointerException();
         this.executor = executor;
-        this.aes = (executor instanceof AbstractExecutorService) ?
+        this.aes = executor instanceof AbstractExecutorService ?
                 (AbstractExecutorService) executor : null;
         this.completionQueue = new LinkedBlockingQueue<Future<V>>();
     }
@@ -45,7 +41,7 @@ public class FriendlyCompletionService<V> implements CompletionService<V> {
         if (executor == null || completionQueue == null)
             throw new NullPointerException();
         this.executor = executor;
-        this.aes = (executor instanceof AbstractExecutorService) ?
+        this.aes = executor instanceof AbstractExecutorService ?
                 (AbstractExecutorService) executor : null;
         this.completionQueue = completionQueue;
     }

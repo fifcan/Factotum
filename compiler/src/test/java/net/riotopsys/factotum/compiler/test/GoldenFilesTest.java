@@ -15,6 +15,7 @@ import javax.tools.JavaFileObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,12 @@ public class GoldenFilesTest {
         Gson gson = new Gson();
 
         List<SourceTestCase> cases = gson.fromJson(
-                new BufferedReader(new InputStreamReader(SourceTestCase.class.getResourceAsStream("/test_cases.json"))),
+                new BufferedReader(
+                        new InputStreamReader(
+                                SourceTestCase.class.getResourceAsStream("/test_cases.json"),
+                                Charset.forName("UTF-8")
+                        )
+                ),
                 new TypeToken<List<SourceTestCase>>() {}.getType());
 
         LinkedList<Object[]> temp = new LinkedList<Object[]>();
@@ -85,8 +91,10 @@ public class GoldenFilesTest {
 
     private String readResource(String path) throws IOException {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
-        String line = null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                this.getClass().getResourceAsStream(path),
+                Charset.forName("UTF-8")));
+        String line;
         StringBuilder  stringBuilder = new StringBuilder();
         String ls = System.getProperty("line.separator");
 
@@ -94,6 +102,8 @@ public class GoldenFilesTest {
             stringBuilder.append( line );
             stringBuilder.append( ls );
         }
+
+        reader.close();
 
         return stringBuilder.toString();
     }

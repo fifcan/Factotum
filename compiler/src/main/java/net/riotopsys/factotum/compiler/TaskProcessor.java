@@ -70,7 +70,7 @@ public class TaskProcessor extends AbstractProcessor {
 
                 if ( elem.getModifiers().contains(Modifier.PRIVATE) ) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
-                            String.format("Annotation (net.riotopsys.factotum.api.annotation.Task) not supported on private methods",
+                            String.format("Annotation (%s) not supported on private methods",
                                     Task.class.getCanonicalName()),
                             elem);
                     continue;

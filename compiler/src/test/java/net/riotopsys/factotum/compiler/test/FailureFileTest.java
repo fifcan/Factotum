@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.testing.compile.JavaFileObjects;
 import net.riotopsys.factotum.compiler.TaskProcessor;
 import net.riotopsys.factotum.compiler.test.auxiliary.FailureTestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -15,6 +14,7 @@ import javax.tools.JavaFileObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +35,12 @@ public class FailureFileTest {
         Gson gson = new Gson();
 
         List<FailureTestCase> cases = gson.fromJson(
-                new BufferedReader(new InputStreamReader(FailureTestCase.class.getResourceAsStream("/failure_cases.json"))),
+                new BufferedReader(
+                        new InputStreamReader(
+                                FailureTestCase.class.getResourceAsStream("/failure_cases.json"),
+                                Charset.forName("UTF-8")
+                        )
+                ),
                 new TypeToken<List<FailureTestCase>>() {}.getType());
 
         LinkedList<Object[]> temp = new LinkedList<Object[]>();
@@ -78,8 +83,10 @@ public class FailureFileTest {
 
     private String readResource(String path) throws IOException {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
-        String line = null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                this.getClass().getResourceAsStream(path),
+                Charset.forName("UTF-8")));
+        String line;
         StringBuilder  stringBuilder = new StringBuilder();
         String ls = System.getProperty("line.separator");
 
@@ -87,6 +94,8 @@ public class FailureFileTest {
             stringBuilder.append( line );
             stringBuilder.append( ls );
         }
+
+        reader.close();
 
         return stringBuilder.toString();
     }
