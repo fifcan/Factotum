@@ -1,0 +1,22 @@
+[
+  {
+    "name": "annotated interface",
+    "initialSource": "/test/AnnotatedInterface.java",
+    "error": "Annotation (net.riotopsys.factotum.api.annotation.Task) not supported on interfaces"
+  },
+  {
+    "name": "no default constructor",
+    "initialSource": "/test/ArgumentedConstructor.java",
+    "error": "Annotation (net.riotopsys.factotum.api.annotation.Task) requires a default non private constructor in class"
+  },
+  {
+    "name": "default constructor is private",
+    "initialSource": "/test/PrivateConstructor.java",
+    "error": "Annotation (net.riotopsys.factotum.api.annotation.Task) requires a default non private constructor in class"
+  },
+  {
+    "name": "Templated class is forbidden",
+    "initialSource": "/test/TemplatedClass.java",
+    "error": "Annotation (net.riotopsys.factotum.api.annotation.Task) not supported on templatized type"
+  }
+]

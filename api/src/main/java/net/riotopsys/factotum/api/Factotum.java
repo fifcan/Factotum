@@ -36,7 +36,7 @@ public class Factotum {
                 builder.maximumPoolSize,
                 builder.keepAliveTime,
                 builder.keepAliveTimeUnit,
-                new PriorityBlockingQueue<>(1, new RunnableComparator()),
+                new PriorityBlockingQueue<>(1, new PriorityComparator()),
                 new ThreadFactory() {
                     public int count = 0;
 

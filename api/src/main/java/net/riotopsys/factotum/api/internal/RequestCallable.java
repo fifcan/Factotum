@@ -10,9 +10,9 @@ import java.util.concurrent.Callable;
  */
 public class RequestCallable implements Callable<ResultWrapper> {
 
-    public final AbstractRequest request;
+    private final AbstractRequest request;
     private final Object handler;
-    public final long serial;
+    private final long serial;
 
     public RequestCallable( AbstractRequest request, Object handler, long serial ){
         this.request = request;
@@ -49,5 +49,9 @@ public class RequestCallable implements Callable<ResultWrapper> {
 
     public AbstractRequest getRequest() {
         return request;
+    }
+
+    public long getSerial() {
+        return serial;
     }
 }

@@ -4,7 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.testing.compile.JavaFileObjects;
 import net.riotopsys.factotum.compiler.TaskProcessor;
-import net.riotopsys.factotum.compiler.test.auxiliary.SourceTestCase;
+import net.riotopsys.factotum.compiler.test.auxiliary.FailureTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,20 +26,20 @@ import static org.truth0.Truth.ASSERT;
  * Created by afitzgerald on 8/29/14.
  */
 @RunWith(Parameterized.class)
-public class GoldenFilesTest {
+public class FailureFileTest {
 
-    private final SourceTestCase testCase;
+    private final FailureTestCase testCase;
 
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> buildTestCases(){
         Gson gson = new Gson();
 
-        List<SourceTestCase> cases = gson.fromJson(
-                new BufferedReader(new InputStreamReader(SourceTestCase.class.getResourceAsStream("/test_cases.json"))),
-                new TypeToken<List<SourceTestCase>>() {}.getType());
+        List<FailureTestCase> cases = gson.fromJson(
+                new BufferedReader(new InputStreamReader(FailureTestCase.class.getResourceAsStream("/failure_cases.json"))),
+                new TypeToken<List<FailureTestCase>>() {}.getType());
 
         LinkedList<Object[]> temp = new LinkedList<Object[]>();
-        for ( SourceTestCase singleCase: cases ) {
+        for ( FailureTestCase singleCase: cases ) {
             Object[] temp2 = new Object[2];
             temp2[0] = singleCase;
             temp2[1] = singleCase.name;
@@ -49,7 +49,7 @@ public class GoldenFilesTest {
         return temp;
     }
 
-    public GoldenFilesTest( SourceTestCase testCase, String name){
+    public FailureFileTest(FailureTestCase testCase, String name){
         this.testCase = testCase;
     }
 
@@ -59,18 +59,12 @@ public class GoldenFilesTest {
         try {
             JavaFileObject source = getSource(testCase.initialSource);
 
-            List<JavaFileObject> expected = new LinkedList<JavaFileObject>();
-
-            for ( String path: testCase.generatedSources ){
-                expected.add(getSource(path));
-            }
-
             ASSERT.about(javaSource())
                     .that(source)
                     .processedWith(new TaskProcessor())
-                    .compilesWithoutError()
-                    .and()
-                    .generatesSources(expected.remove(0), expected.toArray(new JavaFileObject[expected.size()]));
+                    .failsToCompile()
+                    .withErrorContaining(testCase.error)
+                    .in(source);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,7 +75,6 @@ public class GoldenFilesTest {
     private JavaFileObject getSource(String path) throws IOException {
         return JavaFileObjects.forSourceString(path.substring(1).replace(".java", ""), readResource(path));
     }
-
 
     private String readResource(String path) throws IOException {
 

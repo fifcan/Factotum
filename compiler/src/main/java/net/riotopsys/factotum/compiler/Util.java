@@ -4,6 +4,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Types;
 
 /**
@@ -38,5 +39,25 @@ public class Util {
         Types typeUtils = processingEnv.getTypeUtils();
         return (TypeElement) typeUtils.asElement(parameterType);
     }
+
+    public static TypeElement getTypeElement(Element element) {
+        while (element.getKind() != ElementKind.CLASS && element.getKind() != ElementKind.INTERFACE && element != null){
+            element = element.getEnclosingElement();
+        }
+        return (TypeElement) element;
+    }
+
+    public static boolean isPublicEnough(Element element) {
+        return !element.getModifiers().contains(Modifier.PRIVATE);
+    }
+
+    public static boolean hasDefaultConstructor(TypeElement type) {
+        for (ExecutableElement cons : ElementFilter.constructorsIn(type.getEnclosedElements())) {
+            if (cons.getParameters().isEmpty() && isPublicEnough(cons))
+                return true;
+        }
+        return false;
+    }
+
 
 }
