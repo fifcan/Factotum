@@ -59,6 +59,23 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
+                if ( typeElement.getModifiers().contains(Modifier.ABSTRACT) ){
+                    messager.printMessage(Diagnostic.Kind.ERROR,
+                            String.format("Annotation (%s) not supported on Abstract class (%s)",
+                                    Task.class.getCanonicalName(),
+                                    typeElement.getQualifiedName().toString()),
+                            elem);
+                    continue;
+                }
+
+                if ( elem.getModifiers().contains(Modifier.PRIVATE) ) {
+                    messager.printMessage(Diagnostic.Kind.ERROR,
+                            String.format("Annotation (net.riotopsys.factotum.api.annotation.Task) not supported on private methods",
+                                    Task.class.getCanonicalName()),
+                            elem);
+                    continue;
+                }
+
                 new RequestWriter( processingEnv, (ExecutableElement) elem ).write();
             }
         } catch ( IOException e ){
