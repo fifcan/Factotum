@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Task {
 
-    public static final String DEFAULT = "PORK CHOP EXPRESS";
+    String DEFAULT = "";
 
     String requestName() default DEFAULT;
 

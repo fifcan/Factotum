@@ -10,7 +10,7 @@ public class SimpleCancelRequest implements ICancelRequest {
 
     private final Object template;
 
-    public SimpleCancelRequest( Object object ){
+    public SimpleCancelRequest(Object object) {
         template = object;
     }
 

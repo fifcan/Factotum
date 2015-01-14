@@ -1,13 +1,20 @@
 package net.riotopsys.factotum.api;
 
-import net.riotopsys.factotum.api.internal.*;
-import net.riotopsys.factotum.api.internal.FriendlyCompletionService.QueueingFuture;
 import net.riotopsys.factotum.api.interfaces.ICancelRequest;
 import net.riotopsys.factotum.api.interfaces.IOnTaskCompletionCallback;
 import net.riotopsys.factotum.api.interfaces.IOnTaskCreationCallback;
+import net.riotopsys.factotum.api.internal.FriendlyCompletionService;
+import net.riotopsys.factotum.api.internal.FriendlyCompletionService.QueueingFuture;
+import net.riotopsys.factotum.api.internal.PauseableThreadPoolExecutor;
+import net.riotopsys.factotum.api.internal.PriorityComparator;
+import net.riotopsys.factotum.api.internal.RequestCallable;
+import net.riotopsys.factotum.api.internal.ResultWrapper;
 
 import java.util.Iterator;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -29,7 +36,7 @@ public class Factotum {
 
     private ResultCallback resultCallback;
 
-    private Factotum( Builder builder ){
+    private Factotum(Builder builder) {
 
         executor = new PauseableThreadPoolExecutor(
                 builder.maximumPoolSize,
@@ -48,7 +55,7 @@ public class Factotum {
                     }
                 });
 
-        completionService = new FriendlyCompletionService( executor );
+        completionService = new FriendlyCompletionService(executor);
 
         onTaskCompletionCallback = builder.onTaskCompletionCallback;
 
@@ -61,19 +68,19 @@ public class Factotum {
             }
         };
 
-        resultCollector = new Thread( resultCallback );
-        resultCollector.setName(String.format("%s-collector",TAG));
+        resultCollector = new Thread(resultCallback);
+        resultCollector.setName(String.format("%s-collector", TAG));
         resultCollector.start();
 
     }
 
-    public void shutdown(){
+    public void shutdown() {
         resultCallback.stop();
         executor.shutdownNow();
     }
 
-    public void addRequest( AbstractRequest request ){
-        if ( request.isCanceled() ){
+    public void addRequest(AbstractRequest request) {
+        if (request.isCanceled()) {
             return;
         }
         Object handler = request.getTaskHandler();
@@ -81,19 +88,19 @@ public class Factotum {
         completionService.submit(new RequestCallable(request, handler, seq.getAndIncrement()));
     }
 
-    public synchronized void issueCancelation( ICancelRequest cancelRequest ){
+    public synchronized void issueCancelation(ICancelRequest cancelRequest) {
         executor.pause();
 
         Iterator<Runnable> iter = executor.getQueue().iterator();
-        while ( iter.hasNext() ){
-            RequestCallable callable = (RequestCallable) ((QueueingFuture)iter.next()).getOriginalCallable();
+        while (iter.hasNext()) {
+            RequestCallable callable = (RequestCallable) ((QueueingFuture) iter.next()).getOriginalCallable();
             AbstractRequest request = callable.getRequest();
 
-            if ( cancelRequest.match(request.getGroup()) ){
+            if (cancelRequest.match(request.getGroup())) {
                 request.cancel();
             }
 
-            if ( request.isCanceled() ){
+            if (request.isCanceled()) {
                 iter.remove();
             }
         }
@@ -103,7 +110,7 @@ public class Factotum {
 
     public static class Builder {
 
-        private int maximumPoolSize = Runtime.getRuntime().availableProcessors() *2;
+        private int maximumPoolSize = Runtime.getRuntime().availableProcessors() * 2;
 
         private long keepAliveTime = 1;
 
@@ -125,10 +132,10 @@ public class Factotum {
 
         public Builder setKeepAliveTime(long keepAliveTime, TimeUnit keepAliveTimeUnit) {
 
-            if ( maximumPoolSize <=0 ){
+            if (maximumPoolSize <= 0) {
                 throw new IllegalArgumentException("max pool size must be greater then 0");
             }
-            if ( keepAliveTimeUnit == null ){
+            if (keepAliveTimeUnit == null) {
                 throw new IllegalArgumentException("argument cannot be null");
             }
             this.keepAliveTime = keepAliveTime;
@@ -142,7 +149,7 @@ public class Factotum {
         }
 
         public Builder setOnTaskCompletionCallback(IOnTaskCompletionCallback onTaskCompletionCallback) {
-            if ( onTaskCompletionCallback == null ){
+            if (onTaskCompletionCallback == null) {
                 throw new IllegalArgumentException("argument cannot be null");
             }
             this.onTaskCompletionCallback = onTaskCompletionCallback;
@@ -150,14 +157,14 @@ public class Factotum {
         }
 
         public Builder setOnTaskCreationCallback(IOnTaskCreationCallback onTaskCreationCallback) {
-            if ( onTaskCreationCallback == null ){
+            if (onTaskCreationCallback == null) {
                 throw new IllegalArgumentException("argument cannot be null");
             }
             this.onTaskCreationCallback = onTaskCreationCallback;
             return this;
         }
 
-        public Factotum build(){
+        public Factotum build() {
             return new Factotum(this);
         }
     }

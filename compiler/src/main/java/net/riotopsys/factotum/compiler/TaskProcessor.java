@@ -3,10 +3,17 @@ package net.riotopsys.factotum.compiler;
 import com.google.auto.service.AutoService;
 import net.riotopsys.factotum.api.annotation.Task;
 
-import javax.annotation.processing.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
-import javax.lang.model.util.ElementFilter;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.Set;
@@ -32,7 +39,7 @@ public class TaskProcessor extends AbstractProcessor {
             for (Element elem : roundEnv.getElementsAnnotatedWith(Task.class)) {
 
                 TypeElement typeElement = Util.getTypeElement(elem);
-                if ( typeElement.getKind() == ElementKind.INTERFACE){
+                if (typeElement.getKind() == ElementKind.INTERFACE) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
                             String.format("Annotation (%s) not supported on interfaces (%s)",
                                     Task.class.getCanonicalName(),
@@ -41,7 +48,7 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                if ( !Util.hasDefaultConstructor(typeElement) ){
+                if (!Util.hasDefaultConstructor(typeElement)) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
                             String.format("Annotation (%s) requires a default non private constructor in class (%s)",
                                     Task.class.getCanonicalName(),
@@ -50,7 +57,7 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                if ( typeElement.getTypeParameters().size() > 0 ){
+                if (typeElement.getTypeParameters().size() > 0) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
                             String.format("Annotation (%s) not supported on templatized type (%s)",
                                     Task.class.getCanonicalName(),
@@ -59,7 +66,7 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                if ( typeElement.getModifiers().contains(Modifier.ABSTRACT) ){
+                if (typeElement.getModifiers().contains(Modifier.ABSTRACT)) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
                             String.format("Annotation (%s) not supported on Abstract class (%s)",
                                     Task.class.getCanonicalName(),
@@ -68,7 +75,7 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                if ( elem.getModifiers().contains(Modifier.PRIVATE) ) {
+                if (elem.getModifiers().contains(Modifier.PRIVATE)) {
                     messager.printMessage(Diagnostic.Kind.ERROR,
                             String.format("Annotation (%s) not supported on private methods",
                                     Task.class.getCanonicalName()),
@@ -76,9 +83,9 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                new RequestWriter( processingEnv, (ExecutableElement) elem ).write();
+                new RequestWriter(processingEnv, (ExecutableElement) elem).write();
             }
-        } catch ( IOException e ){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

@@ -14,7 +14,7 @@ public class RequestCallable implements Callable<ResultWrapper> {
     private final Object handler;
     private final long serial;
 
-    public RequestCallable( AbstractRequest request, Object handler, long serial ){
+    public RequestCallable(AbstractRequest request, Object handler, long serial) {
         this.request = request;
         this.handler = handler;
         this.serial = serial;
@@ -22,7 +22,7 @@ public class RequestCallable implements Callable<ResultWrapper> {
 
     @Override
     public ResultWrapper call() throws Exception {
-        if ( request.isCanceled() ){
+        if (request.isCanceled()) {
             return null;
         }
 
@@ -32,14 +32,14 @@ public class RequestCallable implements Callable<ResultWrapper> {
         try {
             result = request.execute(handler);
 
-            if ( callback != null ){
+            if (callback != null) {
                 callback.onSuccess(request, result);
             }
 
-        } catch ( Exception e){
+        } catch (Exception e) {
             result = e;
 
-            if ( callback != null ){
+            if (callback != null) {
                 callback.onFailure(request, result);
             }
         }

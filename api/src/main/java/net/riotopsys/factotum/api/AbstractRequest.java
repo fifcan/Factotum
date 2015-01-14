@@ -17,13 +17,14 @@ public abstract class AbstractRequest {
     protected WeakReference<ICallback> callbackRef = null;
 
     public abstract Object execute(Object handler) throws Exception;
+
     public abstract Object getTaskHandler();
 
-    public boolean isCanceled(){
+    public boolean isCanceled() {
         return canceled.get();
     }
 
-    public void cancel(){
+    public void cancel() {
         canceled.set(true);
     }
 
@@ -36,7 +37,7 @@ public abstract class AbstractRequest {
     }
 
     public ICallback getCallback() {
-        if ( callbackRef == null ){
+        if (callbackRef == null) {
             return null;
         }
         return callbackRef.get();

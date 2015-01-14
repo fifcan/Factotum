@@ -3,10 +3,10 @@ package net.riotopsys.factotum;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.Factotum;
 import net.riotopsys.factotum.api.SimpleCancelRequest;
-import net.riotopsys.factotum.api.internal.ResultWrapper;
 import net.riotopsys.factotum.api.interfaces.ICallback;
 import net.riotopsys.factotum.api.interfaces.IOnTaskCompletionCallback;
 import net.riotopsys.factotum.api.interfaces.IOnTaskCreationCallback;
+import net.riotopsys.factotum.api.internal.ResultWrapper;
 import net.riotopsys.factotum.test.MockitoEnabledTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,12 +18,16 @@ import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 /**
  * Created by afitzgerald on 12/29/14.
  */
-public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreationCallback, IOnTaskCompletionCallback {
+public class FactotumTest extends MockitoEnabledTest implements IOnTaskCreationCallback, IOnTaskCompletionCallback {
 
     Object mon;
 
@@ -43,7 +47,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
     Boolean isCanceled;
 
     @Before
-    public void reset(){
+    public void reset() {
         created.set(false);
         completed.set(false);
         obj = new Object();
@@ -53,7 +57,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
     }
 
     @Test
-    public void simpleRun() throws Exception{
+    public void simpleRun() throws Exception {
 
         AbstractRequest request = mock(AbstractRequest.class);
 
@@ -66,7 +70,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
         factotum.addRequest(request);
 
         synchronized (mon) {
-            while (!completed.get()){
+            while (!completed.get()) {
                 mon.wait();
             }
         }
@@ -82,8 +86,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
     }
 
     @Test
-    public void cancelRun() throws Exception{
-
+    public void cancelRun() throws Exception {
 
 
         AbstractRequest request = mock(AbstractRequest.class);
@@ -96,7 +99,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
                 return obj;
             }
         });
-        when( request.getGroup() ).thenReturn("waffles");
+        when(request.getGroup()).thenReturn("waffles");
 
         AbstractRequest request2 = mock(AbstractRequest.class);
         when(request2.isCanceled()).thenAnswer(new Answer<Boolean>() {
@@ -113,7 +116,7 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
                 return obj;
             }
         });
-        when( request2.getGroup() ).thenReturn("eggs");
+        when(request2.getGroup()).thenReturn("eggs");
         Mockito.doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -134,8 +137,8 @@ public class FactotumTest extends MockitoEnabledTest implements  IOnTaskCreation
         factotum.issueCancelation(new SimpleCancelRequest("eggs"));
 
         synchronized (mon) {
-            while (!completed.get()){
-                try{
+            while (!completed.get()) {
+                try {
                     mon.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace(System.err);

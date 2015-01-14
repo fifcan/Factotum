@@ -1,7 +1,13 @@
 package net.riotopsys.factotum.compiler;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -12,9 +18,12 @@ import javax.lang.model.util.Types;
  */
 public class Util {
 
+    private Util() {
+    }
+
     public static PackageElement getPackageElement(Element element) {
 
-        while ( element.getKind() != ElementKind.PACKAGE ){
+        while (element.getKind() != ElementKind.PACKAGE) {
             element = element.getEnclosingElement();
         }
 
@@ -25,7 +34,8 @@ public class Util {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
-    public static TypeElement getParameterElement(VariableElement parameterElement , ProcessingEnvironment processingEnv) {
+    public static TypeElement getParameterElement(VariableElement parameterElement,
+                                                  ProcessingEnvironment processingEnv) {
         TypeMirror parameterType = parameterElement.asType();
         Types typeUtils = processingEnv.getTypeUtils();
         return (TypeElement) typeUtils.asElement(parameterType);
@@ -35,13 +45,16 @@ public class Util {
         return element.getReturnType().getKind().equals(TypeKind.VOID);
     }
 
-    public static TypeElement mirrorTypeToElementType(TypeMirror parameterType , ProcessingEnvironment processingEnv) {
+    public static TypeElement mirrorTypeToElementType(TypeMirror parameterType,
+                                                      ProcessingEnvironment processingEnv) {
         Types typeUtils = processingEnv.getTypeUtils();
         return (TypeElement) typeUtils.asElement(parameterType);
     }
 
     public static TypeElement getTypeElement(Element element) {
-        while ( element != null && element.getKind() != ElementKind.CLASS && element.getKind() != ElementKind.INTERFACE){
+        while (element != null
+                && element.getKind() != ElementKind.CLASS
+                && element.getKind() != ElementKind.INTERFACE) {
             element = element.getEnclosingElement();
         }
         return (TypeElement) element;

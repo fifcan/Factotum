@@ -7,8 +7,8 @@ import net.riotopsys.factotum.api.AbstractRequest;
  */
 public interface ICallback<T> {
 
-    public void onSuccess(final AbstractRequest request, final T result);
+    void onSuccess(final AbstractRequest request, final T result);
 
-    public void onFailure(final AbstractRequest request, final Object error);
+    void onFailure(final AbstractRequest request, final Object error);
 
 }

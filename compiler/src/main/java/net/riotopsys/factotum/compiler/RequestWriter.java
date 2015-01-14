@@ -8,7 +8,11 @@ import net.riotopsys.factotum.api.annotation.Task;
 import net.riotopsys.factotum.api.interfaces.ICallback;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.*;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -16,14 +20,17 @@ import javax.lang.model.type.WildcardType;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by afitzgerald on 8/27/14.
  */
 public class RequestWriter {
 
-    private static class ParameterPair{
+    private static class ParameterPair {
         public String type;
         public String name;
 
@@ -65,7 +72,7 @@ public class RequestWriter {
         buildHandlerClass();
 
         buildRequestName();
-        
+
         buildParameters();
 
         if (!isVoidReturn) {
@@ -75,7 +82,7 @@ public class RequestWriter {
     }
 
     private void buildParameters() {
-        for ( VariableElement parameter: elem.getParameters()){
+        for (VariableElement parameter : elem.getParameters()) {
 
             TypeElement paramType = Util.getParameterElement(parameter, processingEnv);
             TypeMirror parameterType = parameter.asType();
@@ -86,22 +93,26 @@ public class RequestWriter {
 
     public void write() throws IOException {
 
-        JavaFileObject jfo = processingEnv.getFiler().createSourceFile(packageName +'.'+ requestName);
+        JavaFileObject jfo = processingEnv.getFiler().createSourceFile(packageName + '.' + requestName);
 
         JavaWriter jw = new JavaWriter(jfo.openWriter());
 
         jw.emitPackage(packageName)
                 .emitImports(imports)
-                .beginType(requestName, "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), AbstractRequest.class.getSimpleName());
+                .beginType(requestName,
+                        "class",
+                        EnumSet.of(Modifier.PUBLIC, Modifier.FINAL),
+                        AbstractRequest.class.getSimpleName());
 
-        for ( ParameterPair pair: parameters ){
-            jw.emitField(pair.type,pair.name,EnumSet.of(Modifier.PRIVATE,Modifier.FINAL));
+        for (ParameterPair pair : parameters) {
+            jw.emitField(pair.type, pair.name, EnumSet.of(Modifier.PRIVATE, Modifier.FINAL));
         }
 
-        jw.beginConstructor(EnumSet.of(Modifier.PUBLIC), constructorParameters().toArray(new String[parameters.size()*2]));
+        jw.beginConstructor(EnumSet.of(Modifier.PUBLIC),
+                constructorParameters().toArray(new String[parameters.size() * 2]));
 
 
-        for ( VariableElement parameter: elem.getParameters()){
+        for (VariableElement parameter : elem.getParameters()) {
             jw.emitStatement("this.%1$s = %1$s", parameter.getSimpleName().toString());
         }
 
@@ -113,24 +124,28 @@ public class RequestWriter {
                 .emitStatement("return new %s()", handlerClass)
                 .endMethod();
 
-                //write execute method
-        if ( Util.hasVoidReturn(elem ) ){
+        //write execute method
+        if (Util.hasVoidReturn(elem)) {
             createVoidExecute(elem, handlerClass, parameterNames(), jw);
             //TODO: handle set callback
         } else {
             createNormalExecute(elem, handlerClass, parameterNames(), jw);
-            jw.beginMethod(requestName,"setCallback", EnumSet.of(Modifier.PUBLIC), String.format("%s<%s>", ICallback.class.getSimpleName(), returnDef ), "callback" )
+            jw.beginMethod(requestName,
+                    "setCallback",
+                    EnumSet.of(Modifier.PUBLIC),
+                    String.format("%s<%s>", ICallback.class.getSimpleName(), returnDef),
+                    "callback")
                     .emitStatement("callbackRef = new WeakReference<ICallback>(callback)")
                     .emitStatement("return this")
                     .endMethod();
         }
 
-        jw.beginMethod(requestName, "setGroup", EnumSet.of(Modifier.PUBLIC), "Object", "group" )
+        jw.beginMethod(requestName, "setGroup", EnumSet.of(Modifier.PUBLIC), "Object", "group")
                 .emitStatement("this.group = group")
                 .emitStatement("return this")
                 .endMethod();
 
-        jw.beginMethod(requestName, "setPriority", EnumSet.of(Modifier.PUBLIC), "int", "priority" )
+        jw.beginMethod(requestName, "setPriority", EnumSet.of(Modifier.PUBLIC), "int", "priority")
                 .emitStatement("this.priority = priority")
                 .emitStatement("return this")
                 .endMethod();
@@ -143,11 +158,11 @@ public class RequestWriter {
     private String buildTypeDef(TypeMirror mirrorReturnType) {
         String result;
 
-        if ( mirrorReturnType.getKind() == TypeKind.WILDCARD){
+        if (mirrorReturnType.getKind() == TypeKind.WILDCARD) {
 
             TypeMirror wildType = ((WildcardType) mirrorReturnType).getSuperBound();
 
-            if ( wildType != null ){
+            if (wildType != null) {
                 return String.format("? super %s", buildTypeDef(wildType));
             } else {
 
@@ -167,14 +182,14 @@ public class RequestWriter {
 
         ArrayList<String> argTypes = new ArrayList<>();
 
-        for ( TypeMirror arg: ((DeclaredType)mirrorReturnType).getTypeArguments()){
+        for (TypeMirror arg : ((DeclaredType) mirrorReturnType).getTypeArguments()) {
 
-            argTypes.add( buildTypeDef(arg) );
+            argTypes.add(buildTypeDef(arg));
 
         }
 
-        if ( argTypes.size() > 0 ){
-            result = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes) );
+        if (argTypes.size() > 0) {
+            result = String.format("%s<%s>", returnType.getSimpleName().toString(), Joiner.on(", ").join(argTypes));
         } else {
             result = returnType.getSimpleName().toString();
         }
@@ -186,18 +201,18 @@ public class RequestWriter {
         handlerClass = elem.getEnclosingElement().getSimpleName().toString();
     }
 
-    public List<String> constructorParameters(){
+    public List<String> constructorParameters() {
         List<String> result = new ArrayList<>();
-        for ( ParameterPair pair: parameters ){
+        for (ParameterPair pair : parameters) {
             result.add(pair.type);
             result.add(pair.name);
         }
         return result;
     }
 
-    public List<String> parameterNames(){
+    public List<String> parameterNames() {
         List<String> result = new ArrayList<>();
-        for ( ParameterPair pair: parameters ){
+        for (ParameterPair pair : parameters) {
             result.add(pair.name);
         }
         return result;
@@ -205,7 +220,8 @@ public class RequestWriter {
 
     private void addImport(TypeElement paramType) {
         PackageElement paramaterPackage = Util.getPackageElement(paramType);
-        if ( !packageName.equals(paramaterPackage.getQualifiedName().toString()) && !paramaterPackage.getQualifiedName().toString().equals("java.lang")){
+        if (!packageName.equals(paramaterPackage.getQualifiedName().toString())
+                && !"java.lang".equals(paramaterPackage.getQualifiedName().toString())) {
             imports.add(paramType.getQualifiedName().toString());
         }
     }
@@ -214,7 +230,7 @@ public class RequestWriter {
         Task taskAnnotation = elem.getAnnotation(Task.class);
 
         requestName = taskAnnotation.requestName();
-        if ( requestName.equals(Task.DEFAULT) ){
+        if (requestName.equals(Task.DEFAULT)) {
             requestName = Util.ucaseFirstCharacter(elem.getSimpleName().toString()) + "Request";
         }
     }
@@ -224,23 +240,43 @@ public class RequestWriter {
         packageName = packageElem.getQualifiedName().toString();
     }
 
-    private void createNormalExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
+    private void createNormalExecute(ExecutableElement elem,
+                                     String parentClass,
+                                     List<String> parameterNames,
+                                     JavaWriter jw) throws IOException {
         jw.emitAnnotation(Override.class)
-                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), Lists.newArrayList("Object", "handler"), Lists.newArrayList("Exception") )
+                .beginMethod("Object",
+                        "execute",
+                        EnumSet.of(Modifier.PUBLIC),
+                        Lists.newArrayList("Object", "handler"),
+                        Lists.newArrayList("Exception"))
                 .beginControlFlow("if ( isCanceled() )")
                 .emitStatement("return null")
                 .endControlFlow()
-                .emitStatement("return ((%s)handler).%s(%s)", parentClass, elem.getSimpleName().toString(), Joiner.on(", ").join(parameterNames))
+                .emitStatement("return ((%s)handler).%s(%s)",
+                        parentClass,
+                        elem.getSimpleName().toString(),
+                        Joiner.on(", ").join(parameterNames))
                 .endMethod();
     }
 
-    private void createVoidExecute(ExecutableElement elem, String parentClass, List<String> parameterNames, JavaWriter jw) throws IOException {
+    private void createVoidExecute(ExecutableElement elem,
+                                   String parentClass,
+                                   List<String> parameterNames,
+                                   JavaWriter jw) throws IOException {
         jw.emitAnnotation(Override.class)
-                .beginMethod("Object", "execute", EnumSet.of(Modifier.PUBLIC), Lists.newArrayList("Object", "handler"), Lists.newArrayList("Exception"))
+                .beginMethod("Object",
+                        "execute",
+                        EnumSet.of(Modifier.PUBLIC),
+                        Lists.newArrayList("Object", "handler"),
+                        Lists.newArrayList("Exception"))
                 .beginControlFlow("if ( isCanceled() )")
                 .emitStatement("return null")
                 .endControlFlow()
-                .emitStatement("((%s)handler).%s(%s)", parentClass, elem.getSimpleName().toString(), Joiner.on(", ").join(parameterNames))
+                .emitStatement("((%s)handler).%s(%s)",
+                        parentClass,
+                        elem.getSimpleName().toString(),
+                        Joiner.on(", ").join(parameterNames))
                 .emitStatement("return null")
                 .endMethod();
     }

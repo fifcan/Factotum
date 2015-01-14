@@ -31,7 +31,7 @@ public class FailureFileTest {
     private final FailureTestCase testCase;
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> buildTestCases(){
+    public static Collection<Object[]> buildTestCases() {
         Gson gson = new Gson();
 
         List<FailureTestCase> cases = gson.fromJson(
@@ -41,10 +41,10 @@ public class FailureFileTest {
                                 Charset.forName("UTF-8")
                         )
                 ),
-                new TypeToken<List<FailureTestCase>>() {}.getType());
+                new TypeToken<List<FailureTestCase>>() { } .getType());
 
         LinkedList<Object[]> temp = new LinkedList<Object[]>();
-        for ( FailureTestCase singleCase: cases ) {
+        for (FailureTestCase singleCase : cases) {
             Object[] temp2 = new Object[2];
             temp2[0] = singleCase;
             temp2[1] = singleCase.name;
@@ -54,12 +54,12 @@ public class FailureFileTest {
         return temp;
     }
 
-    public FailureFileTest(FailureTestCase testCase, String name){
+    public FailureFileTest(FailureTestCase testCase, String name) {
         this.testCase = testCase;
     }
 
     @Test
-    public void runTestCase(){
+    public void runTestCase() {
 
         try {
             JavaFileObject source = getSource(testCase.initialSource);
@@ -87,12 +87,12 @@ public class FailureFileTest {
                 this.getClass().getResourceAsStream(path),
                 Charset.forName("UTF-8")));
         String line;
-        StringBuilder  stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         String ls = System.getProperty("line.separator");
 
-        while( ( line = reader.readLine() ) != null ) {
-            stringBuilder.append( line );
-            stringBuilder.append( ls );
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append(ls);
         }
 
         reader.close();

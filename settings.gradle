@@ -1,4 +1,4 @@
-rootProject.name = 'parent'
+rootProject.name = 'factotum-parent'
 include ':factotum'
 include ':factotum-compiler'
 

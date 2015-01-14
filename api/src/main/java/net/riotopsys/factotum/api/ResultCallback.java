@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by afitzgerald on 8/29/14.
  */
-public abstract class ResultCallback implements Runnable{
+public abstract class ResultCallback implements Runnable {
 
     private AtomicBoolean stopped = new AtomicBoolean();
 
@@ -18,11 +18,11 @@ public abstract class ResultCallback implements Runnable{
         this.completionService = completionService;
     }
 
-    public abstract void onResult( ResultWrapper result );
+    public abstract void onResult(ResultWrapper result);
 
     @Override
     public void run() {
-        while ( !stopped.get() ){
+        while (!stopped.get()) {
             try {
                 onResult((ResultWrapper) completionService.take().get());
             } catch (Exception e) {
@@ -32,7 +32,7 @@ public abstract class ResultCallback implements Runnable{
         }
     }
 
-    public void stop(){
+    public void stop() {
         stopped.set(true);
         Thread.currentThread().interrupt();
     }

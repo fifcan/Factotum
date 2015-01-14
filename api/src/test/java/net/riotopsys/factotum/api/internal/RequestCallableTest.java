@@ -7,12 +7,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by afitzgerald on 12/29/14.
  */
-public class RequestCallableTest extends MockitoEnabledTest{
+public class RequestCallableTest extends MockitoEnabledTest {
 
     @Mock
     AbstractRequest request;
@@ -32,7 +36,7 @@ public class RequestCallableTest extends MockitoEnabledTest{
         when(request.execute(handler)).thenReturn(obj);
         when(request.getCallback()).thenReturn(callback);
 
-        RequestCallable requestCallable = new RequestCallable(request, handler, 0l);
+        RequestCallable requestCallable = new RequestCallable(request, handler, 0L);
 
         //run
         ResultWrapper result = requestCallable.call();
@@ -50,7 +54,7 @@ public class RequestCallableTest extends MockitoEnabledTest{
     }
 
     @Test
-    public void canceledRequestPath() throws Exception{
+    public void canceledRequestPath() throws Exception {
         //setup
         Object obj = new Object();
 
@@ -58,7 +62,7 @@ public class RequestCallableTest extends MockitoEnabledTest{
         when(request.execute(handler)).thenReturn(obj);
         when(request.getCallback()).thenReturn(callback);
 
-        RequestCallable requestCallable = new RequestCallable(request, handler, 0l);
+        RequestCallable requestCallable = new RequestCallable(request, handler, 0L);
 
         //run
         ResultWrapper result = requestCallable.call();
@@ -73,7 +77,7 @@ public class RequestCallableTest extends MockitoEnabledTest{
     }
 
     @Test
-    public void taskThrowsExceptionPath() throws Exception{
+    public void taskThrowsExceptionPath() throws Exception {
         //setup
         Object obj = new Object();
         Exception exception = new Exception();
@@ -82,7 +86,7 @@ public class RequestCallableTest extends MockitoEnabledTest{
         when(request.execute(handler)).thenThrow(exception);
         when(request.getCallback()).thenReturn(callback);
 
-        RequestCallable requestCallable = new RequestCallable(request, handler, 0l);
+        RequestCallable requestCallable = new RequestCallable(request, handler, 0L);
 
         //run
         ResultWrapper result = requestCallable.call();

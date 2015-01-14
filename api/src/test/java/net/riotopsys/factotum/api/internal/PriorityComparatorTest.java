@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class PriorityComparatorTest extends MockitoEnabledTest {
 
     @Test
-    public void checkForFifo(){
+    public void checkForFifo() {
 
         List<Runnable> runnables = Lists.newArrayList(
                 buildRunnable(0, 0),
@@ -39,7 +39,7 @@ public class PriorityComparatorTest extends MockitoEnabledTest {
     }
 
     @Test
-    public void checkForPriority(){
+    public void checkForPriority() {
 
         List<Runnable> runnables = Lists.newArrayList(
                 buildRunnable(9, 0),
@@ -59,7 +59,7 @@ public class PriorityComparatorTest extends MockitoEnabledTest {
     }
 
     @Test
-    public void checkForMix(){
+    public void checkForMix() {
 
         List<Runnable> runnables = Lists.newArrayList(
                 buildRunnable(3, 0),
@@ -99,8 +99,8 @@ public class PriorityComparatorTest extends MockitoEnabledTest {
         when(request.getPriority()).thenReturn(priority);
 
         RequestCallable originalCallable = mock(RequestCallable.class);
-        when( originalCallable.getSerial() ).thenReturn(serial);
-        when( originalCallable.getRequest() ).thenReturn(request);
+        when(originalCallable.getSerial()).thenReturn(serial);
+        when(originalCallable.getRequest()).thenReturn(request);
 
         FriendlyCompletionService.QueueingFuture result = mock(FriendlyCompletionService.QueueingFuture.class);
         when(result.getOriginalCallable()).thenReturn(originalCallable);

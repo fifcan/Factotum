@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.testing.compile.JavaFileObjects;
 import net.riotopsys.factotum.compiler.TaskProcessor;
 import net.riotopsys.factotum.compiler.test.auxiliary.SourceTestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,7 +31,7 @@ public class GoldenFilesTest {
     private final SourceTestCase testCase;
 
     @Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> buildTestCases(){
+    public static Collection<Object[]> buildTestCases() {
         Gson gson = new Gson();
 
         List<SourceTestCase> cases = gson.fromJson(
@@ -42,10 +41,10 @@ public class GoldenFilesTest {
                                 Charset.forName("UTF-8")
                         )
                 ),
-                new TypeToken<List<SourceTestCase>>() {}.getType());
+                new TypeToken<List<SourceTestCase>>() { } .getType());
 
         LinkedList<Object[]> temp = new LinkedList<Object[]>();
-        for ( SourceTestCase singleCase: cases ) {
+        for (SourceTestCase singleCase : cases) {
             Object[] temp2 = new Object[2];
             temp2[0] = singleCase;
             temp2[1] = singleCase.name;
@@ -55,19 +54,19 @@ public class GoldenFilesTest {
         return temp;
     }
 
-    public GoldenFilesTest( SourceTestCase testCase, String name){
+    public GoldenFilesTest(SourceTestCase testCase, String name) {
         this.testCase = testCase;
     }
 
     @Test
-    public void runTestCase(){
+    public void runTestCase() {
 
         try {
             JavaFileObject source = getSource(testCase.initialSource);
 
             List<JavaFileObject> expected = new LinkedList<JavaFileObject>();
 
-            for ( String path: testCase.generatedSources ){
+            for (String path : testCase.generatedSources) {
                 expected.add(getSource(path));
             }
 
@@ -95,12 +94,12 @@ public class GoldenFilesTest {
                 this.getClass().getResourceAsStream(path),
                 Charset.forName("UTF-8")));
         String line;
-        StringBuilder  stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         String ls = System.getProperty("line.separator");
 
-        while( ( line = reader.readLine() ) != null ) {
-            stringBuilder.append( line );
-            stringBuilder.append( ls );
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append(ls);
         }
 
         reader.close();

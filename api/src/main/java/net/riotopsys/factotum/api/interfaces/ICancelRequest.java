@@ -5,6 +5,6 @@ package net.riotopsys.factotum.api.interfaces;
  */
 public interface ICancelRequest {
 
-    public boolean match(Object object);
+    boolean match(Object object);
 
 }

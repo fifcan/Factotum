@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 public class MockitoEnabledTest {
 
     @Before
-    public void setupMocks(){
+    public void setupMocks() {
         MockitoAnnotations.initMocks(this);
     }
 

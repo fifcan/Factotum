@@ -1,54 +1,54 @@
 [
-    {
-        "name": "simple single test",
-        "initialSource": "/test/SimpleTask.java",
-        "generatedSources": [
-            "/test/SpecialTaskHandlerRequest.java"
-        ]
-    },
-    {
-        "name": "task with a void return",
-        "initialSource": "/test/VoidReturnTask.java",
-        "generatedSources": [
-            "/test/VoidReturnRequest.java"
-        ]
-    },
-    {
-        "name": "multipule tasks in single class",
-        "initialSource": "/test/MultipuleTasks.java",
-        "generatedSources": [
-            "/test/TaskARequest.java",
-            "/test/TaskBRequest.java",
-            "/test/TaskCRequest.java"
-        ]
-    },
-    {
-        "name": "templated returns",
-        "initialSource": "/test/Templated.java",
-        "generatedSources": [
-            "/test/TemplatedRequest.java"
-        ]
-    },
-    {
-        "name": "nested templated returns",
-        "initialSource": "/test/Nested.java",
-        "generatedSources": [
-            "/test/NestedRequest.java"
-        ]
-    },
-    {
-        "name": "wildcard returns",
-        "initialSource": "/test/WildCardReturn.java",
-        "generatedSources": [
-            "/test/WildcardRequest.java"
-        ]
-    },
-    {
-        "name": "templated arguments",
-        "initialSource": "/test/TemplatedArgument.java",
-        "generatedSources": [
-            "/test/TemplatedArgRequest.java",
-            "/test/TemplatedArgMark2Request.java"
-        ]
-    }
+  {
+    "name": "simple single test",
+    "initialSource": "/test/SimpleTask.java",
+    "generatedSources": [
+      "/test/SpecialTaskHandlerRequest.java"
+    ]
+  },
+  {
+    "name": "task with a void return",
+    "initialSource": "/test/VoidReturnTask.java",
+    "generatedSources": [
+      "/test/VoidReturnRequest.java"
+    ]
+  },
+  {
+    "name": "multipule tasks in single class",
+    "initialSource": "/test/MultipuleTasks.java",
+    "generatedSources": [
+      "/test/TaskARequest.java",
+      "/test/TaskBRequest.java",
+      "/test/TaskCRequest.java"
+    ]
+  },
+  {
+    "name": "templated returns",
+    "initialSource": "/test/Templated.java",
+    "generatedSources": [
+      "/test/TemplatedRequest.java"
+    ]
+  },
+  {
+    "name": "nested templated returns",
+    "initialSource": "/test/Nested.java",
+    "generatedSources": [
+      "/test/NestedRequest.java"
+    ]
+  },
+  {
+    "name": "wildcard returns",
+    "initialSource": "/test/WildCardReturn.java",
+    "generatedSources": [
+      "/test/WildcardRequest.java"
+    ]
+  },
+  {
+    "name": "templated arguments",
+    "initialSource": "/test/TemplatedArgument.java",
+    "generatedSources": [
+      "/test/TemplatedArgRequest.java",
+      "/test/TemplatedArgMark2Request.java"
+    ]
+  }
 ]

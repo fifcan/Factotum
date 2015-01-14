@@ -1,6 +1,15 @@
 package net.riotopsys.factotum.api.internal;
 
-import java.util.concurrent.*;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class FriendlyCompletionService<V> implements CompletionService<V> {
     private final Executor executor;
@@ -13,7 +22,11 @@ public class FriendlyCompletionService<V> implements CompletionService<V> {
             this.task = task;
             this.callable = callable;
         }
-        protected void done() { completionQueue.add(task); }
+
+        protected void done() {
+            completionQueue.add(task);
+        }
+
         private final Future<V> task;
         private final Callable<V> callable;
 
@@ -31,8 +44,13 @@ public class FriendlyCompletionService<V> implements CompletionService<V> {
         if (executor == null)
             throw new NullPointerException();
         this.executor = executor;
-        this.aes = executor instanceof AbstractExecutorService ?
-                (AbstractExecutorService) executor : null;
+
+        if (executor instanceof AbstractExecutorService) {
+            this.aes = (AbstractExecutorService) executor;
+        } else {
+            this.aes = null;
+        }
+
         this.completionQueue = new LinkedBlockingQueue<Future<V>>();
     }
 
@@ -41,8 +59,11 @@ public class FriendlyCompletionService<V> implements CompletionService<V> {
         if (executor == null || completionQueue == null)
             throw new NullPointerException();
         this.executor = executor;
-        this.aes = executor instanceof AbstractExecutorService ?
-                (AbstractExecutorService) executor : null;
+        if (executor instanceof AbstractExecutorService) {
+            this.aes = (AbstractExecutorService) executor;
+        } else {
+            this.aes = null;
+        }
         this.completionQueue = completionQueue;
     }
 

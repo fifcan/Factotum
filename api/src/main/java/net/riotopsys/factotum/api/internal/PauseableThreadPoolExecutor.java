@@ -15,7 +15,12 @@ public class PauseableThreadPoolExecutor extends ThreadPoolExecutor {
     private ReentrantLock pauseLock = new ReentrantLock();
     private Condition unpaused = pauseLock.newCondition();
 
-    public PauseableThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+    public PauseableThreadPoolExecutor(int corePoolSize,
+                                       int maximumPoolSize,
+                                       long keepAliveTime,
+                                       TimeUnit unit,
+                                       BlockingQueue<Runnable> workQueue,
+                                       ThreadFactory threadFactory) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
     }
 
@@ -24,7 +29,9 @@ public class PauseableThreadPoolExecutor extends ThreadPoolExecutor {
         super.beforeExecute(t, r);
         pauseLock.lock();
         try {
-            while (isPaused) unpaused.await();
+            while (isPaused) {
+                unpaused.await();
+            }
         } catch (InterruptedException ie) {
             t.interrupt();
         } finally {
