@@ -6,3 +6,4 @@ api/build
 compiler/build
 .gradle/
 build
+local.properties

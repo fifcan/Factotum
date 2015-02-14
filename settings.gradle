@@ -1,5 +1,5 @@
 rootProject.name = 'factotum-parent'
-include ':factotum'
+include ':factotum', ':sample'
 include ':factotum-compiler'
 
 project(':factotum').projectDir = "$rootDir/api" as File

@@ -6,6 +6,7 @@ buildscript {
     }
 
     dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.7'
     }
 }
@@ -15,40 +16,6 @@ apply plugin: 'com.github.ben-manes.versions'
 allprojects  {
     group = 'net.riotopsys.factotum'
     version = '0.0.0-SNAPSHOT'
-
-    apply plugin: 'java'
-    apply plugin: "jacoco"
-    apply plugin: 'maven'
-
-    apply plugin: 'pmd'
-    apply plugin: 'findbugs'
-    apply plugin: 'checkstyle'
-
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
-    test.finalizedBy(project.tasks.jacocoTestReport)
-
-    task sourcesJar(type: Jar, dependsOn:classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
-
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
-    }
-
-    checkstyle{
-        configFile = new File(rootDir, "checkstyle.xml")
-    }
-
 }
 
 subprojects {
