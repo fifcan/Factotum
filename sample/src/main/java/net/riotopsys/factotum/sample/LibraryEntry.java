@@ -7,11 +7,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LibraryEntry {
 
-    private static class Anime {
+    public static class Anime {
         public long id;
+        public String title;
+        public String cover_image;
     }
 
-    private static class Rating {
+    public static class Rating {
         public String type;
         public Float value;
     }

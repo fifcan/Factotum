@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import net.riotopsys.factotum.api.AbstractRequest;
@@ -28,7 +29,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onSuccessInHandler(AbstractRequest abstractRequest, List<LibraryEntry> result) {
-            Toast.makeText(MainActivity.this, String.format("records loaded %d", result.size()), Toast.LENGTH_SHORT).show();
+            adapter.setList(result);
         }
 
         @Override
@@ -38,10 +39,18 @@ public class MainActivity extends Activity {
 
     };
 
+    private ListView listView;
+    private AnimeAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        listView = (ListView)findViewById(R.id.listview);
+
+        adapter = new AnimeAdapter();
+        listView.setAdapter(adapter);
 
         ((SampleApplication)getApplication()).getObjectGraph().inject(this);
     }

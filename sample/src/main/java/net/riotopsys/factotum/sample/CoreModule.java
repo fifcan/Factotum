@@ -1,6 +1,10 @@
 package net.riotopsys.factotum.sample;
 
+import android.util.LruCache;
+
 import net.riotopsys.factotum.api.Factotum;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -34,6 +38,12 @@ public class CoreModule {
     @Provides
     protected Factotum provideFactotum(){
         return factotum;
+    }
+
+    @Singleton
+    @Provides
+    protected LruCache provideCache(){
+        return new LruCache(20);
     }
 
 }

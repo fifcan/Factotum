@@ -27,8 +27,12 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,9 +43,10 @@ dependencies {
 
     compile project(':factotum')
 
-    compile 'com.squareup.retrofit:retrofit:1.8.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.1.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
     compile 'com.squareup.dagger:dagger:1.2.2'
+    compile 'com.squareup.picasso:picasso:2.5.0'
 
     apt project(':factotum-compiler')
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'
