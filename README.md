@@ -1,5 +1,7 @@
 # Factotum
 
+[![Build Status](https://travis-ci.org/riotopsys/Factotum.svg?branch=master)](https://travis-ci.org/riotopsys/Factotum)
+
 ## Overview
 An asynchronous task queue for Java based on the [command pattern][command]. Utilizing code generation to reduce boilerplate class definitions.
 
