@@ -1,3 +1,3 @@
 language: java
-before_script: ./gradlew factotum:assemble factotum-compiler:assemble
+install: ./gradlew factotum:assemble factotum-compiler:assemble
 script: ./gradlew factotum:check factotum-compiler:check
