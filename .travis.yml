@@ -1,3 +1,3 @@
 language: java
-install: ./gradlew factotum:assemble factotum-compiler:assemble
-script: ./gradlew factotum:check factotum-compiler:check
+install: ./gradlew assemble -PskipAndroid
+script: ./gradlew check -PskipAndroid

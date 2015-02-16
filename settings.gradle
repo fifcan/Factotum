@@ -1,6 +1,10 @@
 rootProject.name = 'factotum-parent'
-include ':factotum', ':sample'
+include ':factotum'
 include ':factotum-compiler'
+
+if (!hasProperty('skipAndroid') ) {
+    include ':sample'
+}
 
 project(':factotum').projectDir = "$rootDir/api" as File
 project(':factotum-compiler').projectDir = "$rootDir/compiler" as File
