@@ -47,10 +47,6 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-signing {
-    sign configurations.archives
-}
-
 tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
@@ -76,6 +72,11 @@ dependencies {
 }
 
 if (!hasProperty('skipAndroid') ) {
+
+    signing {
+        sign configurations.archives
+    }
+
     uploadArchives {
         repositories {
             mavenDeployer {
