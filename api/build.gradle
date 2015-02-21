@@ -69,44 +69,46 @@ dependencies{
     testCompile 'com.google.guava:guava:18.0'
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+if (!hasProperty('skipAndroid') ) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 
-            pom.project {
-                name 'Factotum Api'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'An asynchronous task queue for Java based on the command pattern, Api component'
-                url 'https://github.com/riotopsys/Factotum'
-
-                scm {
-                    connection 'scm:git:https://github.com/riotopsys/Factotum.git'
-                    developerConnection 'scm:git:https://github.com/riotopsys/Factotum.git'
+                pom.project {
+                    name 'Factotum Api'
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description 'An asynchronous task queue for Java based on the command pattern, Api component'
                     url 'https://github.com/riotopsys/Factotum'
-                }
 
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    scm {
+                        connection 'scm:git:https://github.com/riotopsys/Factotum.git'
+                        developerConnection 'scm:git:https://github.com/riotopsys/Factotum.git'
+                        url 'https://github.com/riotopsys/Factotum'
                     }
-                }
 
-                developers {
-                    developer {
-                        id 'riotopsys'
-                        name 'C. A. Fitzgerald'
-                        email 'me@riotopsys.net'
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'riotopsys'
+                            name 'C. A. Fitzgerald'
+                            email 'me@riotopsys.net'
+                        }
                     }
                 }
             }
