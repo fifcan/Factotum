@@ -23,10 +23,19 @@ apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'checkstyle'
 
+apply plugin: 'signing'
+
+archivesBaseName = "factotum"
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 test.finalizedBy(project.tasks.jacocoTestReport)
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
 
 task sourcesJar(type: Jar, dependsOn:classes) {
     classifier = 'sources'
@@ -34,7 +43,11 @@ task sourcesJar(type: Jar, dependsOn:classes) {
 }
 
 artifacts {
-    archives sourcesJar
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
 }
 
 tasks.withType(FindBugs) {
@@ -54,4 +67,49 @@ dependencies{
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'com.google.guava:guava:18.0'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Factotum Api'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'An asynchronous task queue for Java based on the command pattern, Api component'
+                url 'https://github.com/riotopsys/Factotum'
+
+                scm {
+                    connection 'scm:git:https://github.com/riotopsys/Factotum.git'
+                    developerConnection 'scm:git:https://github.com/riotopsys/Factotum.git'
+                    url 'https://github.com/riotopsys/Factotum'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'riotopsys'
+                        name 'C. A. Fitzgerald'
+                        email 'me@riotopsys.net'
+                    }
+                }
+            }
+        }
+    }
 }

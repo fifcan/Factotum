@@ -150,7 +150,7 @@ public class FactotumTest extends MockitoEnabledTest implements IOnTaskCreationC
         factotum.addRequest(request);
 
         factotum.addRequest(request2);
-        factotum.issueCancelation(new SimpleCancelRequest("eggs"));
+        factotum.issueCancellation(new SimpleCancelRequest("eggs"));
 
         synchronized (mon) {
             while (!completed.get()) {

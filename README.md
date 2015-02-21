@@ -76,9 +76,99 @@ factotum.addRequest(new DelayRequest(5000).setGroup("delays"));
 factotum.addRequest(new DelayRequest(10000).setGroup("delays"));
 factotum.addRequest(new DelayRequest(50000).setGroup("delays"));
 
-factotum.issueCancelation(new SimpleCancelRequest("delays"))
+factotum.issueCancellation(new SimpleCancelRequest("delays"))
+```
+## Android: Receiving Callbacks on the UI thread
+
+Factotum delivers all callbacks on the same thread that processed the task. If you need the callback on the UI thread an adapted callback object can be used. This is an example of one way this can be achieved.
+
+```
+public abstract class HandlerCallback<T> implements ICallback<T> {
+    public abstract void onSuccessInHandler(AbstractRequest abstractRequest, T result);
+    public abstract void onFailureInHandler(AbstractRequest abstractRequest, Object error);
+
+    private Handler handler;
+
+    public HandlerCallback(Handler handler){
+        this.handler = handler;
+    }
+
+    @Override
+    public void onSuccess(final AbstractRequest abstractRequest, final T o) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onSuccessInHandler(abstractRequest, o);
+            }
+        });
+    }
+
+    @Override
+    public void onFailure(final AbstractRequest abstractRequest, final Object o) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onFailureInHandler(abstractRequest, o);
+            }
+        });
+    }
+}
 ```
 
+
+## Dependency Injection
+
+Dependency Injection can be used with Factotum by adding a `IOnTaskCreationCallback` when building a Factotum instance. This is an example using [Dagger][dagger].
+
+### Factotum Building with DI
+```
+CoreModule coreModule = new CoreModule();
+objectGraph = ObjectGraph.create(coreModule);
+
+Factotum factotum = new Factotum.Builder()
+                .setOnTaskCreationCallback(new DaggerTaskInjector(objectGraph))
+                .build();
+```
+
+### Concrete IOnTaskCreationCallback 
+```
+public class DaggerTaskInjector implements IOnTaskCreationCallback {
+
+    private final ObjectGraph objectGraph;
+
+    public DaggerTaskInjector( ObjectGraph objectGraph ){
+        this.objectGraph = objectGraph;
+    }
+
+    @Override
+    public void onTaskCreation(Object task) {
+        objectGraph.inject(task);
+    }
+}
+```
+
+## Download
+Factotum is avaliable on maven central.
+
+### Gradle
+```
+compile 'net.riotopsys.factotum:factotum:0.0.0'
+compile 'net.riotopsys.factotum:factotum-compiler:0.0.0'
+```
+
+###Maven
+```
+<dependency>
+    <groupId>net.riotopsys.factotum</groupId>
+    <artifactId>factotum</artifactId>
+    <version>0.0.0</version>
+</dependency>
+<dependency>
+    <groupId>net.riotopsys.factotum</groupId>
+    <artifactId>factotum-compiler</artifactId>
+    <version>0.0.0</version>
+</dependency>
+```
 
 ## Contributing
 
@@ -104,3 +194,4 @@ Copyright 2015 C. A. Fitzgerald
 
 
 [command]: http://en.wikipedia.org/wiki/Command_pattern
+[dagger]: http://square.github.io/dagger/

@@ -104,7 +104,7 @@ public class Factotum {
         completionService.submit(new RequestCallable(request, handler, seq.getAndIncrement()));
     }
 
-    public synchronized void issueCancelation(ICancelRequest cancelRequest) {
+    public synchronized void issueCancellation(ICancelRequest cancelRequest) {
         executor.pause();
 
         Iterator<Runnable> iter = executor.getQueue().iterator();
