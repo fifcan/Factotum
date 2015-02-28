@@ -50,5 +50,12 @@
       "/test/TemplatedArgRequest.java",
       "/test/TemplatedArgMark2Request.java"
     ]
+  },
+  {
+    "name": "primative arguments",
+    "initialSource": "/test/Primitive.java",
+    "generatedSources": [
+      "/test/PrimitiveRequest.java"
+    ]
   }
 ]

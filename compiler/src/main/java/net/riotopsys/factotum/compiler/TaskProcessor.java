@@ -99,7 +99,7 @@ public class TaskProcessor extends AbstractProcessor {
                     continue;
                 }
 
-                new RequestWriter(processingEnv, (ExecutableElement) elem).write();
+                new RequestWriter(processingEnv).write((ExecutableElement) elem);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

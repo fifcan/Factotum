@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2015 C. A. Fitzgerald
  *
@@ -15,35 +14,15 @@
  *    limitations under the License.
  */
 
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
+package test;
+
+import net.riotopsys.factotum.api.annotation.Task;
+
+public class Primitive {
+
+    @Task()
+    public float primitive(int stuff) {
+        return 0;
     }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
-    }
-}
-
-apply plugin: 'com.github.ben-manes.versions'
-
-allprojects  {
-    group = 'net.riotopsys.factotum'
-    version = '0.1.0-SNAPSHOT'
-}
-
-subprojects {
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
 }

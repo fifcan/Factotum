@@ -1,5 +1,10 @@
 package test;
 
+import java.lang.Exception;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;

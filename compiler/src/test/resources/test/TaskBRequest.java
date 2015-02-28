@@ -1,5 +1,10 @@
 package test;
 
+import java.lang.Exception;
+import java.lang.Float;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 import java.lang.ref.WeakReference;
 import net.riotopsys.factotum.api.AbstractRequest;
 import net.riotopsys.factotum.api.interfaces.ICallback;

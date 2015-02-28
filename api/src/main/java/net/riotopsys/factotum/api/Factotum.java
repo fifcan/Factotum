@@ -152,7 +152,7 @@ public class Factotum {
                 throw new IllegalArgumentException("max pool size must be greater then 0");
             }
             if (keepAliveTimeUnit == null) {
-                throw new IllegalArgumentException("argument cannot be null");
+                throw new NullPointerException();
             }
             this.keepAliveTime = keepAliveTime;
             this.keepAliveTimeUnit = keepAliveTimeUnit;
@@ -166,7 +166,7 @@ public class Factotum {
 
         public Builder setOnTaskCompletionCallback(IOnTaskCompletionCallback onTaskCompletionCallback) {
             if (onTaskCompletionCallback == null) {
-                throw new IllegalArgumentException("argument cannot be null");
+                throw new NullPointerException();
             }
             this.onTaskCompletionCallback = onTaskCompletionCallback;
             return this;
@@ -174,7 +174,7 @@ public class Factotum {
 
         public Builder setOnTaskCreationCallback(IOnTaskCreationCallback onTaskCreationCallback) {
             if (onTaskCreationCallback == null) {
-                throw new IllegalArgumentException("argument cannot be null");
+                throw new NullPointerException();
             }
             this.onTaskCreationCallback = onTaskCreationCallback;
             return this;

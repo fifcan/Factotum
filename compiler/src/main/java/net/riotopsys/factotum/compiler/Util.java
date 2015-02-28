@@ -16,18 +16,13 @@
 
 package net.riotopsys.factotum.compiler;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Types;
 
 /**
  * Created by afitzgerald on 8/27/14.
@@ -48,23 +43,6 @@ public class Util {
 
     public static String ucaseFirstCharacter(String name) {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
-    }
-
-    public static TypeElement getParameterElement(VariableElement parameterElement,
-                                                  ProcessingEnvironment processingEnv) {
-        TypeMirror parameterType = parameterElement.asType();
-        Types typeUtils = processingEnv.getTypeUtils();
-        return (TypeElement) typeUtils.asElement(parameterType);
-    }
-
-    public static boolean hasVoidReturn(ExecutableElement element) {
-        return element.getReturnType().getKind().equals(TypeKind.VOID);
-    }
-
-    public static TypeElement mirrorTypeToElementType(TypeMirror parameterType,
-                                                      ProcessingEnvironment processingEnv) {
-        Types typeUtils = processingEnv.getTypeUtils();
-        return (TypeElement) typeUtils.asElement(parameterType);
     }
 
     public static TypeElement getTypeElement(Element element) {
