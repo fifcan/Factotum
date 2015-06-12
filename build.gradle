@@ -22,8 +22,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
+        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.10.1'
     }
 }
 
@@ -31,7 +31,7 @@ apply plugin: 'com.github.ben-manes.versions'
 
 allprojects  {
     group = 'net.riotopsys.factotum'
-    version = '0.1.0-SNAPSHOT'
+    version = '1.0.0'
 }
 
 subprojects {
