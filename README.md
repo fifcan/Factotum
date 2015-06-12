@@ -152,8 +152,8 @@ Factotum is avaliable on maven central.
 
 ### Gradle
 ```
-compile 'net.riotopsys.factotum:factotum:0.0.0'
-compile 'net.riotopsys.factotum:factotum-compiler:0.0.0'
+compile 'net.riotopsys.factotum:factotum:1.0.0'
+compile 'net.riotopsys.factotum:factotum-compiler:1.0.0'
 ```
 
 ###Maven
@@ -161,12 +161,12 @@ compile 'net.riotopsys.factotum:factotum-compiler:0.0.0'
 <dependency>
     <groupId>net.riotopsys.factotum</groupId>
     <artifactId>factotum</artifactId>
-    <version>0.0.0</version>
+    <version>1.0.0</version>
 </dependency>
 <dependency>
     <groupId>net.riotopsys.factotum</groupId>
     <artifactId>factotum-compiler</artifactId>
-    <version>0.0.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -191,6 +191,13 @@ Copyright 2015 C. A. Fitzgerald
    limitations under the License.
 ```
 
+## Change log
+
+### 1.0.0 
+Converted to using javapoet as it provides more robust handling of java generics.
+
+### 0.0.0 
+initial release
 
 
 [command]: http://en.wikipedia.org/wiki/Command_pattern
